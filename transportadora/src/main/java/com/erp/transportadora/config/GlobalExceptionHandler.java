@@ -20,47 +20,27 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> erros = new HashMap<>();
 
-        ex.getBindingResult().getFieldErrors().forEach(erro ->
-                erros.put(erro.getField(), erro.getDefaultMessage())
-        );
+        ex.getBindingResult().getFieldErrors().forEach(erro -> erros.put(erro.getField(), erro.getDefaultMessage()));
 
-        ErrorResponse response = new ErrorResponse(
-                "Erro de validação",
-                erros,
-                LocalDateTime.now()
-        );
+        ErrorResponse response = new ErrorResponse("Erro de validação", erros, LocalDateTime.now());
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(response);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     // Tratar ResponseStatusException
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponse> handleResponseStatus(ResponseStatusException ex) {
-        ErrorResponse response = new ErrorResponse(
-                ex.getReason(),
-                null,
-                LocalDateTime.now()
-        );
+        ErrorResponse response = new ErrorResponse(ex.getReason(), null, LocalDateTime.now());
 
-        return ResponseEntity
-                .status(ex.getStatusCode())
-                .body(response);
+        return ResponseEntity.status(ex.getStatusCode()).body(response);
     }
 
     // Tratar exceções genéricas
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
-        ErrorResponse response = new ErrorResponse(
-                "Erro interno do servidor",
-                null,
-                LocalDateTime.now()
-        );
+        ErrorResponse response = new ErrorResponse("Erro interno do servidor", null, LocalDateTime.now());
 
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(response);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }
 

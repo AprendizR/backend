@@ -21,9 +21,7 @@ public class ClienteController {
 
     @PostMapping
     public ResponseEntity<ClienteEntity> criar(@Valid @RequestBody ClienteDTORequest dto) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(service.salvar(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(dto));
     }
 
     @GetMapping

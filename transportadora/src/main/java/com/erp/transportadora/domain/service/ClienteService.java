@@ -29,8 +29,8 @@ public class ClienteService {
     }
 
     public ClienteEntity buscarPorId(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException
+                (HttpStatus.NOT_FOUND, "Cliente não encontrado"));
     }
 
     public List<ClienteDTOResponse> listarTodos() {

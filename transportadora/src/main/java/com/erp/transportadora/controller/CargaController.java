@@ -34,7 +34,7 @@ public class CargaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CargaDTODetalhada> buscar(@PathVariable Long id) {
-        return ResponseEntity.ok(service.buscarDetalhada(id));
+        return ResponseEntity.ok(service.buscaDetalhada(id));
     }
 
     @PostMapping("/{id}/iniciar-rota")

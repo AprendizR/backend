@@ -22,8 +22,7 @@ public class CargaMapper {
                                 n.getId(),
                                 n.getOrdemServico(),
                                 n.getNumero(),
-                                n.getEntregue()
-                        )).toList(),
+                                n.getEntregue())).toList(),
                 carga.getDataCriacao()
         );
     }

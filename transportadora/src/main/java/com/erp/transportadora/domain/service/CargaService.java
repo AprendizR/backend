@@ -50,17 +50,14 @@ public class CargaService {
     @Transactional
     public void adicionarNota(Long cargaId, Long notaId) {
 
-        CargaEntity carga = cargaRepository.findById(cargaId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Carga não encontrada"));
+        CargaEntity carga = cargaRepository.findById(cargaId).orElseThrow(() -> new ResponseStatusException
+                (HttpStatus.NOT_FOUND, "Carga não encontrada"));
 
-        NotaFiscalEntity nota = notaFiscalRepository.findById(notaId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Nota fiscal não encontrada"));
+        NotaFiscalEntity nota = notaFiscalRepository.findById(notaId).orElseThrow(() -> new ResponseStatusException
+                (HttpStatus.NOT_FOUND, "Nota fiscal não encontrada"));
 
         if (nota.getCarga() != null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Nota já vinculada a outra carga");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nota já vinculada a outra carga");
         }
 
         nota.setCarga(carga);
@@ -71,13 +68,9 @@ public class CargaService {
     }
 
     @Transactional
-    public CargaDTODetalhada buscarDetalhada(Long id) {
-
-        CargaEntity carga = cargaRepository.buscarComNotas(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Carga não encontrada"
-                ));
-
+    public CargaDTODetalhada buscaDetalhada(Long id) {
+        CargaEntity carga = cargaRepository.buscarComNotas(id).orElseThrow(() -> new ResponseStatusException
+                (HttpStatus.NOT_FOUND, "Carga não encontrada"));
         return CargaMapper.toDetalhada(carga);
     }
 
@@ -108,17 +101,14 @@ public class CargaService {
     @Transactional
     public void iniciarRota(Long cargaId) {
 
-        CargaEntity carga = cargaRepository.findById(cargaId)
-                .orElseThrow(() -> new RuntimeException("Carga não encontrada"));
+        CargaEntity carga = cargaRepository.findById(cargaId).orElseThrow(() -> new RuntimeException("Carga não encontrada"));
 
         if (carga.getNotasFiscais().isEmpty()) {
             throw new RuntimeException("Carga sem notas fiscais");
         }
-
         if (carga.getStatus() != Status.CENTRO_DISTRIBUICAO) {
             throw new RuntimeException("Carga não pode iniciar rota");
         }
-
         carga.setStatus(Status.EM_ROTA);
         carga.setDataCarregamento(LocalDateTime.now());
 
