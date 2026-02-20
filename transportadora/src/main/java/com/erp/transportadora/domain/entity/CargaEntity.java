@@ -30,7 +30,7 @@ public class CargaEntity {
     @JoinColumn(name = "motorista_id")
     private MotoristaEntity motorista;
 
-    @OneToMany(mappedBy = "carga")
+    @OneToMany(mappedBy = "carga", cascade = CascadeType.ALL)
     @Builder.Default
     @JsonIgnoreProperties("carga")
     private List<NotaFiscalEntity> notasFiscais = new ArrayList<>();

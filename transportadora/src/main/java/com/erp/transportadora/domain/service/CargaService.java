@@ -30,9 +30,9 @@ public class CargaService {
     private final NotaFiscalRepository notaFiscalRepository;
 
     @Transactional
-    public CargaDTOResponse criar(CargaDTORequest dto){
+    public CargaDTOResponse criar(CargaDTORequest dto) {
         VeiculoEntity veiculo = veiculoRepository.findById(dto.veiculoId()).orElseThrow(() -> new RuntimeException("Veículo não encontrado"));
-        MotoristaEntity motorista = motoristaRepository.findById(dto.motoristaId()).orElseThrow(()-> new RuntimeException("Motorista não encontrado"));
+        MotoristaEntity motorista = motoristaRepository.findById(dto.motoristaId()).orElseThrow(() -> new RuntimeException("Motorista não encontrado"));
         Long proximoNumero = cargaRepository.findMaxNumeroRota() + 1;
         CargaEntity carga = CargaEntity.criar(veiculo, motorista, proximoNumero);
         CargaEntity salva = cargaRepository.save(carga);
@@ -47,6 +47,7 @@ public class CargaService {
 
         );
     }
+
     @Transactional
     public void adicionarNota(Long cargaId, Long notaId) {
 
@@ -62,6 +63,25 @@ public class CargaService {
 
         nota.setCarga(carga);
         carga.getNotasFiscais().add(nota);
+        recalcularStatus(carga);
+        notaFiscalRepository.save(nota);
+        cargaRepository.save(carga);
+    }
+
+    @Transactional
+    public void excluirNota(Long cargaId, Long notaId) {
+        CargaEntity carga = cargaRepository.buscarComNotas(cargaId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carga não encontrada"));
+
+        NotaFiscalEntity nota = notaFiscalRepository.findById(notaId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota não encontrada"));
+
+        if (nota.getCarga() == null || !nota.getCarga().getId().equals(cargaId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nota não pertence a esta carga");
+        }
+
+        nota.setCarga(null);
+        carga.getNotasFiscais().remove(nota);
         recalcularStatus(carga);
         notaFiscalRepository.save(nota);
         cargaRepository.save(carga);

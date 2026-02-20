@@ -32,6 +32,12 @@ public class CargaController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{cargaId}/notas/{notaId}")
+    public ResponseEntity<Void> excluirNota(@PathVariable Long cargaId, @PathVariable Long notaId) {
+        service.excluirNota(cargaId, notaId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CargaDTODetalhada> buscar(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscaDetalhada(id));
@@ -46,7 +52,5 @@ public class CargaController {
     public List<CargaDTOResumo> listar() {
         return service.listar();
     }
-
-
 
 }
