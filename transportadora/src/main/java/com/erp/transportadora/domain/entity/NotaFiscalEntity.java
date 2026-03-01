@@ -1,4 +1,6 @@
 package com.erp.transportadora.domain.entity;
+
+import com.erp.transportadora.domain.enums.StatusNota;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,7 +20,7 @@ public class NotaFiscalEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column
     private String numero;
 
     @Column(name = "ordem_servico", nullable = false, unique = true)
@@ -28,9 +30,13 @@ public class NotaFiscalEntity {
     @JoinColumn(name = "cliente_id")
     private ClienteEntity cliente;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
-    private Boolean entregue = false;
+    private StatusNota status = StatusNota.PENDENTE;
+
+    @Column(name = "foto_comprovante_path")
+    private String fotoComprovantePath;
 
     @ManyToOne
     @JoinColumn(name = "carga_id")
@@ -55,5 +61,5 @@ public class NotaFiscalEntity {
     private Double longitude;
     private String observacao;
     private Integer ordemEntrega;
-
+    private LocalDateTime dataEntrega;
 }

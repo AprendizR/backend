@@ -30,7 +30,7 @@ public class CargaEntity {
     @JoinColumn(name = "motorista_id")
     private MotoristaEntity motorista;
 
-    @OneToMany(mappedBy = "carga", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "carga", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     @JsonIgnoreProperties("carga")
     private List<NotaFiscalEntity> notasFiscais = new ArrayList<>();
@@ -46,15 +46,4 @@ public class CargaEntity {
     private LocalDateTime dataCriacao;
     private LocalDateTime dataCarregamento;
     private LocalDateTime dataEntrega;
-
-
-    public static CargaEntity criar(VeiculoEntity veiculo, MotoristaEntity motorista, Long numeroRota) {
-        CargaEntity carga = new CargaEntity();
-        carga.setVeiculo(veiculo);
-        carga.setMotorista(motorista);
-        carga.setNumeroRota(numeroRota);
-        carga.setStatus(Status.CENTRO_DISTRIBUICAO);
-        carga.setDataCriacao(LocalDateTime.now());
-        return carga;
-    }
 }

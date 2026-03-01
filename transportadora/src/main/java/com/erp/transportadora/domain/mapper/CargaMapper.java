@@ -1,6 +1,7 @@
 package com.erp.transportadora.domain.mapper;
 
 import com.erp.transportadora.domain.entity.CargaEntity;
+import com.erp.transportadora.domain.enums.StatusNota;
 import com.erp.transportadora.dto.response.*;
 
 public class CargaMapper {
@@ -22,7 +23,7 @@ public class CargaMapper {
                                 n.getId(),
                                 n.getOrdemServico(),
                                 n.getNumero(),
-                                n.getEntregue())).toList(),
+                                n.getStatus() == StatusNota.ENTREGUE)).toList(),
                 carga.getDataCriacao()
         );
     }

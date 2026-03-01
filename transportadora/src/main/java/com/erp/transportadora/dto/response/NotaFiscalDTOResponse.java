@@ -8,6 +8,6 @@ public record NotaFiscalDTOResponse(
         String destinatario,
         String cidade,
         String endereco,
-        Boolean entregue,
+        String status,
         Integer volumes
 ) {}

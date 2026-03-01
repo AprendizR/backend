@@ -12,7 +12,9 @@ public record NotaFiscalDTORequest(
         @NotBlank
         String cidade,
 
-        String endereco
+        String endereco,
+
+        String status
 
 ) {
 }

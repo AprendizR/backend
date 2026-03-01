@@ -43,11 +43,6 @@ public class CargaController {
         return ResponseEntity.ok(service.buscaDetalhada(id));
     }
 
-    @PostMapping("/{id}/iniciar-rota")
-    public void iniciarRota(@PathVariable Long id) {
-        service.iniciarRota(id);
-    }
-
     @GetMapping
     public List<CargaDTOResumo> listar() {
         return service.listar();

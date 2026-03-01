@@ -4,5 +4,8 @@ public record ClienteDTOResponse (
         Long id,
         String nome,
         String cnpj,
-        String email
+        String email,
+        String cidade,
+        String endereco,
+        String cep
 ){}

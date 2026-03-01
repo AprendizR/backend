@@ -3,8 +3,8 @@ package com.erp.transportadora.domain.service;
 import com.erp.transportadora.domain.entity.CargaEntity;
 import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.domain.entity.OcorrenciaEntity;
+import com.erp.transportadora.domain.enums.StatusNota;
 import com.erp.transportadora.domain.enums.SubtipoOcorrencia;
-import com.erp.transportadora.domain.enums.TipoOcorrencia;
 import com.erp.transportadora.domain.mapper.OcorrenciaMapper;
 import com.erp.transportadora.domain.repository.NotaFiscalRepository;
 import com.erp.transportadora.domain.repository.OcorrenciaRepository;
@@ -52,7 +52,7 @@ public class OcorrenciaService {
 
 
         if (isOcorrenciaFinalizadora(dto.subtipo())) {
-            nota.setEntregue(true);
+            nota.setStatus(StatusNota.ENTREGUE);
             notaFiscalRepository.save(nota);
 
             CargaEntity carga = nota.getCarga();

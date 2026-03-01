@@ -2,6 +2,7 @@ package com.erp.transportadora.domain.service;
 
 import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.domain.enums.Status;
+import com.erp.transportadora.domain.enums.StatusNota;
 import com.erp.transportadora.domain.mapper.NotaFiscalMapper;
 import com.erp.transportadora.domain.repository.NotaFiscalRepository;
 import com.erp.transportadora.dto.request.NotaFiscalDTORequest;
@@ -21,9 +22,6 @@ public class NotaFiscalService {
 
     @Transactional
     public NotaFiscalDTOResponse criar(NotaFiscalDTORequest dto) {
-        if (repository.existsByNumero(dto.numero())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Nota fiscal já cadastrada");
-        }
 
         Long proximaOS = repository.findMaxOrdemServico() + 1;
         NotaFiscalEntity nota = NotaFiscalMapper.toEntity(dto);
@@ -49,6 +47,6 @@ public class NotaFiscalService {
     }
 
     public List<NotaFiscalDTOResponse> listarDisponiveis() {
-        return repository.findByCargaIsNullAndEntregue(false).stream().map(NotaFiscalMapper::toResponse).toList();
+        return repository.findByCargaIsNullAndStatus(StatusNota.PENDENTE).stream().map(NotaFiscalMapper::toResponse).toList();
     }
 }

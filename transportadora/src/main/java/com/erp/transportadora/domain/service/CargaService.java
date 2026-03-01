@@ -5,6 +5,7 @@ import com.erp.transportadora.domain.entity.MotoristaEntity;
 import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.domain.entity.VeiculoEntity;
 import com.erp.transportadora.domain.enums.Status;
+import com.erp.transportadora.domain.enums.StatusNota;
 import com.erp.transportadora.domain.mapper.CargaMapper;
 import com.erp.transportadora.domain.repository.CargaRepository;
 import com.erp.transportadora.domain.repository.MotoristaRepository;
@@ -34,7 +35,14 @@ public class CargaService {
         VeiculoEntity veiculo = veiculoRepository.findById(dto.veiculoId()).orElseThrow(() -> new RuntimeException("Veículo não encontrado"));
         MotoristaEntity motorista = motoristaRepository.findById(dto.motoristaId()).orElseThrow(() -> new RuntimeException("Motorista não encontrado"));
         Long proximoNumero = cargaRepository.findMaxNumeroRota() + 1;
-        CargaEntity carga = CargaEntity.criar(veiculo, motorista, proximoNumero);
+
+        CargaEntity carga = new CargaEntity();
+        carga.setVeiculo(veiculo);
+        carga.setMotorista(motorista);
+        carga.setNumeroRota(proximoNumero);
+        carga.setStatus(Status.CENTRO_DISTRIBUICAO);
+        carga.setDataCriacao(LocalDateTime.now());
+
         CargaEntity salva = cargaRepository.save(carga);
 
         return new CargaDTOResponse(
@@ -44,7 +52,6 @@ public class CargaService {
                 veiculo.getId(),
                 motorista.getId(),
                 salva.getDataCriacao()
-
         );
     }
 
@@ -98,7 +105,7 @@ public class CargaService {
         boolean algumaEntregue = false;
         boolean todasEntregues = true;
         for (NotaFiscalEntity nota : carga.getNotasFiscais()) {
-            if (nota.getEntregue()) {
+            if (nota.getStatus() == StatusNota.ENTREGUE) {
                 algumaEntregue = true;
             } else {
                 todasEntregues = false;
@@ -116,23 +123,6 @@ public class CargaService {
         } else {
             carga.setStatus(Status.CENTRO_DISTRIBUICAO);
         }
-    }
-
-    @Transactional
-    public void iniciarRota(Long cargaId) {
-
-        CargaEntity carga = cargaRepository.findById(cargaId).orElseThrow(() -> new RuntimeException("Carga não encontrada"));
-
-        if (carga.getNotasFiscais().isEmpty()) {
-            throw new RuntimeException("Carga sem notas fiscais");
-        }
-        if (carga.getStatus() != Status.CENTRO_DISTRIBUICAO) {
-            throw new RuntimeException("Carga não pode iniciar rota");
-        }
-        carga.setStatus(Status.EM_ROTA);
-        carga.setDataCarregamento(LocalDateTime.now());
-
-        cargaRepository.save(carga);
     }
 
     public List<CargaDTOResumo> listar() {
