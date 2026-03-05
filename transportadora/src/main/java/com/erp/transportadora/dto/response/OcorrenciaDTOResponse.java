@@ -1,7 +1,6 @@
 package com.erp.transportadora.dto.response;
 
 import com.erp.transportadora.domain.enums.SubtipoOcorrencia;
-import com.erp.transportadora.domain.enums.TipoOcorrencia;
 
 import java.time.LocalDateTime;
 

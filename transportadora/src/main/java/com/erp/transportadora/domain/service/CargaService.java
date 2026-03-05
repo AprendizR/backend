@@ -4,7 +4,7 @@ import com.erp.transportadora.domain.entity.CargaEntity;
 import com.erp.transportadora.domain.entity.MotoristaEntity;
 import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.domain.entity.VeiculoEntity;
-import com.erp.transportadora.domain.enums.Status;
+import com.erp.transportadora.domain.enums.StatusCarga;
 import com.erp.transportadora.domain.enums.StatusNota;
 import com.erp.transportadora.domain.mapper.CargaMapper;
 import com.erp.transportadora.domain.repository.CargaRepository;
@@ -40,7 +40,7 @@ public class CargaService {
         carga.setVeiculo(veiculo);
         carga.setMotorista(motorista);
         carga.setNumeroRota(proximoNumero);
-        carga.setStatus(Status.CENTRO_DISTRIBUICAO);
+        carga.setStatusCarga(StatusCarga.CENTRO_DISTRIBUICAO);
         carga.setDataCriacao(LocalDateTime.now());
 
         CargaEntity salva = cargaRepository.save(carga);
@@ -48,7 +48,7 @@ public class CargaService {
         return new CargaDTOResponse(
                 salva.getId(),
                 salva.getNumeroRota(),
-                salva.getStatus(),
+                salva.getStatusCarga(),
                 veiculo.getId(),
                 motorista.getId(),
                 salva.getDataCriacao()
@@ -102,27 +102,27 @@ public class CargaService {
     }
 
     public void recalcularStatus(CargaEntity carga) {
-        boolean algumaEntregue = false;
-        boolean todasEntregues = true;
-        for (NotaFiscalEntity nota : carga.getNotasFiscais()) {
-            if (nota.getStatus() == StatusNota.ENTREGUE) {
-                algumaEntregue = true;
-            } else {
-                todasEntregues = false;
-            }
-        }
-        if (carga.getNotasFiscais().isEmpty()) {
-            carga.setStatus(Status.CENTRO_DISTRIBUICAO);
+        if (carga.getNotasFiscais().isEmpty()){
+            carga.setStatusCarga(StatusCarga.CENTRO_DISTRIBUICAO);
+            cargaRepository.save(carga);
             return;
         }
 
-        if (todasEntregues) {
-            carga.setStatus(Status.ENTREGUE);
-        } else if (algumaEntregue) {
-            carga.setStatus(Status.EM_ROTA);
+        boolean todasFinalizadas = carga.getNotasFiscais().stream().allMatch(n -> n.getStatus() != StatusNota.PENDENTE
+        && n.getStatus() != StatusNota.EM_ROTA);
+        boolean algumasFinalizadas = carga.getNotasFiscais().stream().anyMatch(n -> n.getStatus() != StatusNota.PENDENTE
+        && n.getStatus() != StatusNota.EM_ROTA);
+
+        if (todasFinalizadas){
+            carga.setStatusCarga(StatusCarga.ENTREGUE);
+        } else if (algumasFinalizadas) {
+            carga.setStatusCarga(StatusCarga.EM_ROTA);
         } else {
-            carga.setStatus(Status.CENTRO_DISTRIBUICAO);
+            carga.setStatusCarga(StatusCarga.CENTRO_DISTRIBUICAO);
         }
+
+        cargaRepository.save(carga);
+
     }
 
     public List<CargaDTOResumo> listar() {

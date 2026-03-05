@@ -1,6 +1,6 @@
 package com.erp.transportadora.domain.entity;
 
-import com.erp.transportadora.domain.enums.Status;
+import com.erp.transportadora.domain.enums.StatusCarga;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,7 +37,7 @@ public class CargaEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status;
+    private StatusCarga statusCarga;
 
     @Column(unique = true)
     private Long numeroRota;

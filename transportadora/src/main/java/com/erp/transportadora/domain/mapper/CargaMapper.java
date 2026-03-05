@@ -1,6 +1,7 @@
 package com.erp.transportadora.domain.mapper;
 
 import com.erp.transportadora.domain.entity.CargaEntity;
+import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.domain.enums.StatusNota;
 import com.erp.transportadora.dto.response.*;
 
@@ -10,7 +11,7 @@ public class CargaMapper {
         return new CargaDTODetalhada(
                 carga.getId(),
                 carga.getNumeroRota(),
-                carga.getStatus(),
+                carga.getStatusCarga(),
                 new MotoristaDTOResumo(
                         carga.getMotorista().getId(),
                         carga.getMotorista().getNome()
@@ -19,11 +20,14 @@ public class CargaMapper {
                         carga.getVeiculo().getId(),
                         carga.getVeiculo().getPlaca()
                 ),
-                carga.getNotasFiscais().stream().map(n -> new NotaFiscalDTOResumo(
+                carga.getNotasFiscais().stream()
+                        .map(n -> new NotaFiscalDTOResumo(
                                 n.getId(),
                                 n.getOrdemServico(),
                                 n.getNumero(),
-                                n.getStatus() == StatusNota.ENTREGUE)).toList(),
+                                isFinalizada(n)
+                        ))
+                        .toList(),
                 carga.getDataCriacao()
         );
     }
@@ -32,7 +36,7 @@ public class CargaMapper {
         return new CargaDTOResumo(
                 carga.getId(),
                 carga.getNumeroRota(),
-                carga.getStatus(),
+                carga.getStatusCarga(),
                 new MotoristaDTOResumo(
                         carga.getMotorista().getId(),
                         carga.getMotorista().getNome()
@@ -43,5 +47,9 @@ public class CargaMapper {
                 ),
                 carga.getDataCriacao()
         );
+    }
+
+    private static boolean isFinalizada(NotaFiscalEntity nota) {
+        return nota.getStatus() != StatusNota.PENDENTE && nota.getStatus() != StatusNota.EM_ROTA;
     }
 }

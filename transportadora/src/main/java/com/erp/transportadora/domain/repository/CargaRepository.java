@@ -1,7 +1,7 @@
 package com.erp.transportadora.domain.repository;
 
 import com.erp.transportadora.domain.entity.CargaEntity;
-import com.erp.transportadora.domain.enums.Status;
+import com.erp.transportadora.domain.enums.StatusCarga;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +15,6 @@ public interface CargaRepository extends JpaRepository<CargaEntity, Long> {
     @Query("SELECT coalesce(max(c.numeroRota), 0) FROM CargaEntity c")
     Long findMaxNumeroRota();
 
-    long countByStatus(Status status);
+    long countByStatusCarga(StatusCarga statusCarga);
 }
 

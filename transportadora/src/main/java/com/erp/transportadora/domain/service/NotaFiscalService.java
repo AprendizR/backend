@@ -1,7 +1,6 @@
 package com.erp.transportadora.domain.service;
 
 import com.erp.transportadora.domain.entity.NotaFiscalEntity;
-import com.erp.transportadora.domain.enums.Status;
 import com.erp.transportadora.domain.enums.StatusNota;
 import com.erp.transportadora.domain.mapper.NotaFiscalMapper;
 import com.erp.transportadora.domain.repository.NotaFiscalRepository;

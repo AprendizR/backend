@@ -1,6 +1,5 @@
 package com.erp.transportadora.domain.entity;
 import com.erp.transportadora.domain.enums.SubtipoOcorrencia;
-import com.erp.transportadora.domain.enums.TipoOcorrencia;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,9 +21,6 @@ public class OcorrenciaEntity {
     @ManyToOne
     @JoinColumn(name = "nota_fiscal_id", nullable = false)
     private NotaFiscalEntity notaFiscal;
-
-    @Enumerated(EnumType.STRING)
-    private TipoOcorrencia tipo;
 
     @Enumerated(EnumType.STRING)
     private SubtipoOcorrencia subtipo;

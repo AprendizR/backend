@@ -1,13 +1,13 @@
 package com.erp.transportadora.dto.response;
 
-import com.erp.transportadora.domain.enums.Status;
+import com.erp.transportadora.domain.enums.StatusCarga;
 
 import java.time.LocalDateTime;
 
 public record CargaDTOResumo(
         Long id,
         Long numeroRota,
-        Status status,
+        StatusCarga statusCarga,
         MotoristaDTOResumo motorista,
         VeiculoDTOResumo veiculo,
         LocalDateTime dataCriacao

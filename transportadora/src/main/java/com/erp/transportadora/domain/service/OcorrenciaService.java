@@ -32,9 +32,7 @@ public class OcorrenciaService {
         NotaFiscalEntity nota = notaFiscalRepository.findByOrdemServico(dto.ordemServico()).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota fiscal com OS " + dto.ordemServico() + " não encontrada"));
 
-        List<OcorrenciaEntity> ocorrenciasExistentes = ocorrenciaRepository.findByNotaFiscalId(nota.getId());
-
-        boolean jaFinalizada = ocorrenciasExistentes.stream().anyMatch(o -> isOcorrenciaFinalizadora(o.getSubtipo()));
+        boolean jaFinalizada = nota.getStatus() != StatusNota.PENDENTE && nota.getStatus() != StatusNota.EM_ROTA;
 
         if (jaFinalizada) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nota já possui ocorrência de finalização registrada");
@@ -50,26 +48,16 @@ public class OcorrenciaService {
 
         OcorrenciaEntity salva = ocorrenciaRepository.save(ocorrencia);
 
+        StatusNota novoStatus = dto.subtipo().toStatusNota();
+        nota.setStatus(novoStatus);
+        notaFiscalRepository.save(nota);
 
-        if (isOcorrenciaFinalizadora(dto.subtipo())) {
-            nota.setStatus(StatusNota.ENTREGUE);
-            notaFiscalRepository.save(nota);
-
-            CargaEntity carga = nota.getCarga();
-            if (carga != null) {
-                cargaService.recalcularStatus(carga);
-            }
+        CargaEntity carga = nota.getCarga();
+        if (carga != null) {
+            cargaService.recalcularStatus(carga);
         }
 
         return OcorrenciaMapper.toResponse(salva);
-    }
-
-    private boolean isOcorrenciaFinalizadora(SubtipoOcorrencia subtipo) {
-        return subtipo == SubtipoOcorrencia.ENTREGA_COMPLETA
-                || subtipo == SubtipoOcorrencia.ENTREGA_PARCIAL
-                || subtipo == SubtipoOcorrencia.ENTREGA_RECUSADA
-                || subtipo == SubtipoOcorrencia.COLETA_COMPLETA
-                || subtipo == SubtipoOcorrencia.TROCA_COMPLETA;
     }
 
     // Buscar por ID da nota (uso interno)

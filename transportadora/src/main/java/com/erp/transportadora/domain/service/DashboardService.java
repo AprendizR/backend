@@ -1,6 +1,6 @@
 package com.erp.transportadora.domain.service;
 
-import com.erp.transportadora.domain.enums.Status;
+import com.erp.transportadora.domain.enums.StatusCarga;
 import com.erp.transportadora.domain.enums.StatusNota;
 import com.erp.transportadora.domain.repository.CargaRepository;
 import com.erp.transportadora.domain.repository.NotaFiscalRepository;
@@ -19,8 +19,8 @@ public class DashboardService {
 
     public EstatisticasDTOResponse obterEstatisticas() {
         long totalCargas = cargaRepository.count();
-        long cargasEmRota = cargaRepository.countByStatus(Status.EM_ROTA);
-        long cargasEntregues = cargaRepository.countByStatus(Status.ENTREGUE);
+        long cargasEmRota = cargaRepository.countByStatusCarga(StatusCarga.EM_ROTA);
+        long cargasEntregues = cargaRepository.countByStatusCarga(StatusCarga.ENTREGUE);
         LocalDateTime inicioDoDia = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
 
         long notasEntreguesHoje = notaFiscalRepository.countByStatusAndDataEmissaoAfter(StatusNota.ENTREGUE, inicioDoDia);
