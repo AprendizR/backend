@@ -11,14 +11,21 @@ import com.erp.transportadora.domain.repository.CargaRepository;
 import com.erp.transportadora.domain.repository.MotoristaRepository;
 import com.erp.transportadora.domain.repository.NotaFiscalRepository;
 import com.erp.transportadora.domain.repository.VeiculoRepository;
+import com.erp.transportadora.domain.spec.CargaSpecification;
 import com.erp.transportadora.dto.request.CargaDTORequest;
 import com.erp.transportadora.dto.response.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -125,10 +132,10 @@ public class CargaService {
 
     }
 
-    public List<CargaDTOResumo> listar() {
-        return cargaRepository.findAll().stream()
-                .map(CargaMapper::toResumo)
-                .toList();
+    public Page<CargaDTOResumo> listar(Long motoristaId, Long veiculoId, Long numeroCarga, LocalDate dataInicio, LocalDate dataFim, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dataCriacao").descending());
+        Specification<CargaEntity> spec = CargaSpecification.filtrar(motoristaId, veiculoId, numeroCarga, dataInicio, dataFim);
+        return cargaRepository.findAll(spec, pageable).map(CargaMapper::toResumo);
     }
 
 }

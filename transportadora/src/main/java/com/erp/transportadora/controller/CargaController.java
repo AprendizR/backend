@@ -7,10 +7,12 @@ import com.erp.transportadora.dto.response.CargaDTOResponse;
 import com.erp.transportadora.dto.response.CargaDTODetalhada;
 import com.erp.transportadora.dto.response.CargaDTOResumo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -44,8 +46,16 @@ public class CargaController {
     }
 
     @GetMapping
-    public List<CargaDTOResumo> listar() {
-        return service.listar();
+    public ResponseEntity<Page<CargaDTOResumo>> listar(
+            @RequestParam(required = false) Long motoristaId,
+            @RequestParam(required = false) Long veiculoId,
+            @RequestParam(required = false) Long numeroCarga,
+            @RequestParam(required = false) LocalDate dataInicio,
+            @RequestParam(required = false) LocalDate dataFim,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(service.listar(motoristaId, veiculoId, numeroCarga, dataInicio, dataFim, page, size));
     }
 
 }
