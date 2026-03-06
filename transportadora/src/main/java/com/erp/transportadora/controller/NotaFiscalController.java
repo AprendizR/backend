@@ -5,10 +5,12 @@ import com.erp.transportadora.domain.service.NotaFiscalService;
 import com.erp.transportadora.dto.request.NotaFiscalDTORequest;
 import com.erp.transportadora.dto.response.NotaFiscalDTOResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -25,19 +27,22 @@ public class NotaFiscalController {
     }
 
     @GetMapping
-    public ResponseEntity<List<NotaFiscalDTOResponse>> listar() {
-        return ResponseEntity.ok(service.listar());
+    public ResponseEntity<Page<NotaFiscalDTOResponse>> listar(
+            @RequestParam(required = false) String numero,
+            @RequestParam(required = false) Long ordemServico,
+            @RequestParam(required = false) String remetente,
+            @RequestParam(required = false) String destinatario,
+            @RequestParam(required = false) LocalDate dataInicio,
+            @RequestParam(required = false) LocalDate dataFim,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(service.listar(numero, ordemServico, remetente, destinatario, dataInicio, dataFim, page, size));
     }
 
     // Buscar por ID (uso interno)
     @GetMapping("/{id}")
     public ResponseEntity<NotaFiscalEntity> buscar(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscaPorId(id));
-    }
-
-    @GetMapping("/os/{ordemServico}")
-    public ResponseEntity<NotaFiscalEntity> buscarPorOS(@PathVariable Long ordemServico) {
-        return ResponseEntity.ok(service.buscarPorOS(ordemServico));
     }
 
     @GetMapping("/disponiveis")

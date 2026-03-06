@@ -4,14 +4,22 @@ import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.domain.enums.StatusNota;
 import com.erp.transportadora.domain.mapper.NotaFiscalMapper;
 import com.erp.transportadora.domain.repository.NotaFiscalRepository;
+import com.erp.transportadora.domain.spec.NotaFiscalSpecification;
 import com.erp.transportadora.dto.request.NotaFiscalDTORequest;
 import com.erp.transportadora.dto.response.NotaFiscalDTOResponse;
+import com.erp.transportadora.dto.response.NotaFiscalDTOResumo;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -40,12 +48,13 @@ public class NotaFiscalService {
                 "Nota fiscal não encontrada"));
     }
 
-    public NotaFiscalEntity buscarPorOS(Long ordemServico) {
-        return repository.findByOrdemServico(ordemServico).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                "Nota fiscal com OS " + ordemServico + " não encontrada"));
-    }
-
     public List<NotaFiscalDTOResponse> listarDisponiveis() {
         return repository.findByCargaIsNullAndStatus(StatusNota.PENDENTE).stream().map(NotaFiscalMapper::toResponse).toList();
+    }
+
+    public Page<NotaFiscalDTOResponse> listar(String numero, Long ordemServico, String remetente, String destinatario, LocalDate dataInicio, LocalDate dataFim, int page, int size){
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dataEmissao").descending());
+        Specification<NotaFiscalEntity> spec = NotaFiscalSpecification.filtrar(numero, ordemServico, remetente, destinatario, dataInicio, dataFim);
+        return repository.findAll(spec, pageable).map(NotaFiscalMapper::toResponse);
     }
 }

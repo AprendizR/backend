@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface NotaFiscalRepository extends JpaRepository<NotaFiscalEntity, Long> {
+public interface NotaFiscalRepository extends JpaRepository<NotaFiscalEntity, Long>, JpaSpecificationExecutor<NotaFiscalEntity> {
 
     Optional<NotaFiscalEntity> findByOrdemServico(Long ordemServico);
 

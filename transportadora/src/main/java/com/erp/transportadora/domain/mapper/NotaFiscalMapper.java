@@ -1,6 +1,7 @@
 package com.erp.transportadora.domain.mapper;
 
 import com.erp.transportadora.domain.enums.StatusNota;
+import com.erp.transportadora.dto.response.NotaFiscalDTOResumo;
 import com.erp.transportadora.validators.NormalizadorUtils;
 import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.dto.request.NotaFiscalDTORequest;
