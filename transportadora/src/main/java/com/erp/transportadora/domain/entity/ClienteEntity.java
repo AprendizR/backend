@@ -19,7 +19,6 @@ public class ClienteEntity {
     private String nome;
 
     private String cnpj;
-    private String email;
     private String cidade;
     private String endereco;
     private String cep;

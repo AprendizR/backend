@@ -11,9 +11,6 @@ public record ClienteDTORequest (
     @ValidCNPJ
     String cnpj,
 
-    @Email(message = "Email inválido")
-    String email,
-
     String cidade,
     String endereco,
     String cep
