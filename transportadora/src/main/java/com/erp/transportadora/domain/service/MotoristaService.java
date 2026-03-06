@@ -17,19 +17,21 @@ import java.util.List;
 public class MotoristaService {
     private final MotoristaRepository repository;
 
-
     public MotoristaEntity salvar(@Valid MotoristaEntity dto) {
+        if (dto.getApelido() == null || dto.getApelido().isBlank()){
+            dto.setApelido(dto.getNome());
+        }
+
         MotoristaEntity motorista = MotoristaMapper.toEntity(dto);
 
-        repository.findByCpf(motorista.getCpf()).ifPresent(m -> {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF já cadastrado");
-        });
-
+        repository.findByCpf(motorista.getCpf()).ifPresent(m -> {throw new ResponseStatusException
+                (HttpStatus.CONFLICT, "CPF já cadastrado");});
         return repository.save(motorista);
     }
 
     public MotoristaEntity buscaPorId(Long id) {
-        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motorista não encontrado"));
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException
+                (HttpStatus.NOT_FOUND, "Motorista não encontrado"));
     }
 
     public List<MotoristaEntity> listarTodos() {
@@ -43,9 +45,6 @@ public class MotoristaService {
     }
 
     public List<MotoristaDTOResponse> buscarPorNome(String nome) {
-        return repository.findByNomeContainingIgnoreCase(nome)
-                .stream()
-                .map(MotoristaMapper::toResponse)
-                .toList();
+        return repository.findByNomeContainingIgnoreCase(nome).stream().map(MotoristaMapper::toResponse).toList();
     }
 }

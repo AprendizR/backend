@@ -6,12 +6,10 @@ import com.erp.transportadora.dto.response.MotoristaDTOResponse;
 import jakarta.validation.Valid;
 
 public class MotoristaMapper {
-    private MotoristaMapper() {
-    }
-
     public static MotoristaEntity toEntity(@Valid MotoristaEntity dto) {
         return MotoristaEntity.builder()
                 .nome(NormalizadorUtils.trimUpper(dto.getNome()))
+                .apelido(NormalizadorUtils.trimUpper(dto.getApelido()))
                 .cpf(NormalizadorUtils.apenasNumeros(dto.getCpf()))
                 .telefone(NormalizadorUtils.apenasNumeros(dto.getTelefone()))
                 .ativo(true)

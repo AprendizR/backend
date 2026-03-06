@@ -8,7 +8,7 @@ public record CargaDTOResumo(
         Long id,
         Long numeroRota,
         StatusCarga statusCarga,
-        MotoristaDTOResumo motorista,
-        VeiculoDTOResumo veiculo,
+        MotoristaDTOResponse motorista,
+        VeiculoDTOResponse veiculo,
         LocalDateTime dataCriacao
 ) {}

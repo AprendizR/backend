@@ -9,8 +9,8 @@ public record CargaDTODetalhada(
         Long id,
         Long numeroRota,
         StatusCarga statusCarga,
-        MotoristaDTOResumo motorista,
-        VeiculoDTOResumo veiculo,
+        MotoristaDTOResponse motorista,
+        VeiculoDTOResponse veiculo,
         List<NotaFiscalDTOResumo> notasFiscais,
         LocalDateTime dataCriacao
 ) {}

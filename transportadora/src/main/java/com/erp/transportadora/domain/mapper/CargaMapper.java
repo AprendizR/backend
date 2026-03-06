@@ -12,13 +12,14 @@ public class CargaMapper {
                 carga.getId(),
                 carga.getNumeroRota(),
                 carga.getStatusCarga(),
-                new MotoristaDTOResumo(
+                new MotoristaDTOResponse(
                         carga.getMotorista().getId(),
                         carga.getMotorista().getNome()
                 ),
-                new VeiculoDTOResumo(
+                new VeiculoDTOResponse(
                         carga.getVeiculo().getId(),
-                        carga.getVeiculo().getPlaca()
+                        carga.getVeiculo().getPlaca(),
+                        carga.getVeiculo().getModelo()
                 ),
                 carga.getNotasFiscais().stream()
                         .map(n -> new NotaFiscalDTOResumo(
@@ -37,13 +38,14 @@ public class CargaMapper {
                 carga.getId(),
                 carga.getNumeroRota(),
                 carga.getStatusCarga(),
-                new MotoristaDTOResumo(
+                new MotoristaDTOResponse(
                         carga.getMotorista().getId(),
                         carga.getMotorista().getNome()
                 ),
-                new VeiculoDTOResumo(
+                new VeiculoDTOResponse(
                         carga.getVeiculo().getId(),
-                        carga.getVeiculo().getPlaca()
+                        carga.getVeiculo().getPlaca(),
+                        carga.getVeiculo().getModelo()
                 ),
                 carga.getDataCriacao()
         );
