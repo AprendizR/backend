@@ -12,14 +12,16 @@ public class MotoristaMapper {
                 .apelido(NormalizadorUtils.trimUpper(dto.getApelido()))
                 .cpf(NormalizadorUtils.apenasNumeros(dto.getCpf()))
                 .telefone(NormalizadorUtils.apenasNumeros(dto.getTelefone()))
-                .ativo(true)
                 .build();
     }
 
     public static MotoristaDTOResponse toResponse(MotoristaEntity entity) {
         return new MotoristaDTOResponse(
                 entity.getId(),
-                entity.getNome()
+                entity.getNome(),
+                entity.getApelido(),
+                entity.getCpf(),
+                entity.getTelefone()
         );
     }
 }

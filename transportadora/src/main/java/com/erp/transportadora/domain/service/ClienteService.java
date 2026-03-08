@@ -5,6 +5,7 @@ import com.erp.transportadora.domain.mapper.ClienteMapper;
 import com.erp.transportadora.domain.repository.ClienteRepository;
 import com.erp.transportadora.dto.request.ClienteDTORequest;
 import com.erp.transportadora.dto.response.ClienteDTOResponse;
+import com.erp.transportadora.validators.NormalizadorUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,16 @@ public class ClienteService {
         return repository.save(cliente);
     }
 
+    public ClienteEntity atualizar(Long id, ClienteDTORequest dto) {
+        ClienteEntity entity = buscarPorId(id);
+        entity.setNome(NormalizadorUtils.trimUpper(dto.nome()));
+        entity.setCnpj(dto.cnpj() != null ? NormalizadorUtils.apenasNumeros(dto.cnpj()) : null);
+        entity.setCidade(dto.cidade() != null ? NormalizadorUtils.trimUpper(dto.cidade()) : null);
+        entity.setEndereco(dto.endereco() != null ? NormalizadorUtils.trimUpper(dto.endereco()) : null);
+        entity.setCep(dto.cep() != null ? NormalizadorUtils.apenasNumeros(dto.cep()) : null);
+        return repository.save(entity);
+    }
+
     public ClienteEntity buscarPorId(Long id) {
         return repository.findById(id).orElseThrow(() -> new ResponseStatusException
                 (HttpStatus.NOT_FOUND, "Cliente não encontrado"));
@@ -38,6 +49,11 @@ public class ClienteService {
                 .stream()
                 .map(ClienteMapper::toResponse)
                 .toList();
+    }
+
+    public void deletar (Long id){
+        buscarPorId(id);
+        repository.deleteById(id);
     }
 
 }

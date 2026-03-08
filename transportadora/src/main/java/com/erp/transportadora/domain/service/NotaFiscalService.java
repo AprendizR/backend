@@ -8,6 +8,7 @@ import com.erp.transportadora.domain.spec.NotaFiscalSpecification;
 import com.erp.transportadora.dto.request.NotaFiscalDTORequest;
 import com.erp.transportadora.dto.response.NotaFiscalDTOResponse;
 import com.erp.transportadora.dto.response.NotaFiscalDTOResumo;
+import com.erp.transportadora.validators.NormalizadorUtils;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,7 +30,6 @@ public class NotaFiscalService {
 
     @Transactional
     public NotaFiscalDTOResponse criar(NotaFiscalDTORequest dto) {
-
         Long proximaOS = repository.findMaxOrdemServico() + 1;
         NotaFiscalEntity nota = NotaFiscalMapper.toEntity(dto);
         nota.setOrdemServico(proximaOS);
@@ -38,23 +38,40 @@ public class NotaFiscalService {
         return NotaFiscalMapper.toResponse(salva);
     }
 
+    public NotaFiscalEntity atualizar(Long id, NotaFiscalDTORequest dto) {
+        NotaFiscalEntity entity = buscaPorId(id);
+        entity.setNumero(NormalizadorUtils.apenasNumeros(dto.numero() != null ? dto.numero() : null));
+        entity.setRemetente(NormalizadorUtils.trimUpper(dto.remetente() != null ? dto.remetente() : null));
+        entity.setDestinatario(NormalizadorUtils.trimUpper(dto.destinatario() != null ? dto.destinatario() : null));
+        entity.setCidade(NormalizadorUtils.trimUpper(dto.cidade() != null ? dto.cidade() : null));
+        entity.setEndereco(NormalizadorUtils.trimUpper(dto.endereco() != null ? dto.endereco() : null));
+        entity.setValor(dto.valor());
+        entity.setVolumes(dto.volumes());
+        entity.setCep(dto.cep() != null ? NormalizadorUtils.apenasNumeros(dto.cep()) : null);
+
+        return repository.save(entity);
+    }
+
     public List<NotaFiscalDTOResponse> listar() {
         return repository.findAll().stream().map(NotaFiscalMapper::toResponse).toList();
     }
 
-    // Buscar por ID (uso interno - adicionar nota em carga)
     public NotaFiscalEntity buscaPorId(Long id) {
-        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                "Nota fiscal não encontrada"));
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota fiscal não encontrada"));
     }
 
     public List<NotaFiscalDTOResponse> listarDisponiveis() {
         return repository.findByCargaIsNullAndStatus(StatusNota.PENDENTE).stream().map(NotaFiscalMapper::toResponse).toList();
     }
 
-    public Page<NotaFiscalDTOResponse> listar(String numero, Long ordemServico, String remetente, String destinatario, LocalDate dataInicio, LocalDate dataFim, int page, int size){
+    public Page<NotaFiscalDTOResponse> listar(String numero, Long ordemServico, String remetente, String destinatario, LocalDate dataInicio, LocalDate dataFim, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dataEmissao").descending());
         Specification<NotaFiscalEntity> spec = NotaFiscalSpecification.filtrar(numero, ordemServico, remetente, destinatario, dataInicio, dataFim);
         return repository.findAll(spec, pageable).map(NotaFiscalMapper::toResponse);
+    }
+
+    public void excluir(Long id) {
+        buscaPorId(id);
+        repository.deleteById(id);
     }
 }

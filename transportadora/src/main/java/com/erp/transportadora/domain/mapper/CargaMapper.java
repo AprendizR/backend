@@ -3,6 +3,8 @@ package com.erp.transportadora.domain.mapper;
 import com.erp.transportadora.domain.entity.CargaEntity;
 import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.domain.enums.StatusNota;
+import com.erp.transportadora.dto.request.MotoristaDTORequest;
+import com.erp.transportadora.dto.request.VeiculoDTORequest;
 import com.erp.transportadora.dto.response.*;
 
 public class CargaMapper {
@@ -12,12 +14,13 @@ public class CargaMapper {
                 carga.getId(),
                 carga.getNumeroRota(),
                 carga.getStatusCarga(),
-                new MotoristaDTOResponse(
-                        carga.getMotorista().getId(),
-                        carga.getMotorista().getNome()
+                new MotoristaDTORequest(
+                        carga.getMotorista().getNome(),
+                        carga.getMotorista().getApelido(),
+                        carga.getMotorista().getCpf(),
+                        carga.getMotorista().getTelefone()
                 ),
-                new VeiculoDTOResponse(
-                        carga.getVeiculo().getId(),
+                new VeiculoDTORequest(
                         carga.getVeiculo().getPlaca(),
                         carga.getVeiculo().getModelo()
                 ),
@@ -38,12 +41,13 @@ public class CargaMapper {
                 carga.getId(),
                 carga.getNumeroRota(),
                 carga.getStatusCarga(),
-                new MotoristaDTOResponse(
-                        carga.getMotorista().getId(),
-                        carga.getMotorista().getNome()
+                new MotoristaDTORequest(
+                        carga.getMotorista().getNome(),
+                        carga.getMotorista().getApelido(),
+                        carga.getMotorista().getCpf(),
+                        carga.getMotorista().getTelefone()
                 ),
-                new VeiculoDTOResponse(
-                        carga.getVeiculo().getId(),
+                new VeiculoDTORequest(
                         carga.getVeiculo().getPlaca(),
                         carga.getVeiculo().getModelo()
                 ),

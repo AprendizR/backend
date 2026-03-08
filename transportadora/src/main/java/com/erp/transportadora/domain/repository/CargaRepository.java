@@ -17,5 +17,7 @@ public interface CargaRepository extends JpaRepository<CargaEntity, Long>, JpaSp
     Long findMaxNumeroRota();
 
     long countByStatusCarga(StatusCarga statusCarga);
+
+    boolean existsByMotoristaId(Long motoristaId);
 }
 

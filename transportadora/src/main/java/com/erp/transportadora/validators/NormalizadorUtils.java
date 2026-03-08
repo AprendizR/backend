@@ -6,10 +6,6 @@ public final class NormalizadorUtils {
         return valor == null ? null : valor.trim().toUpperCase();
     }
 
-    public static String trimLower(String valor) {
-        return valor == null ? null : valor.trim().toLowerCase();
-    }
-
     public static String apenasNumeros(String valor) {
         return valor == null ? null : valor.replaceAll("\\D", "");
     }

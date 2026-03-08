@@ -9,5 +9,6 @@ public record NotaFiscalDTOResponse(
         String cidade,
         String endereco,
         String status,
+        Double valor,
         Integer volumes
 ) {}

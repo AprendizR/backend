@@ -14,8 +14,8 @@ public class ClienteMapper {
         return ClienteEntity.builder()
                 .nome(NormalizadorUtils.trimUpper(dto.nome()))
                 .cnpj(dto.cnpj() != null ? NormalizadorUtils.apenasNumeros(dto.cnpj()) : null)
-                .cidade(dto.cidade() != null ? NormalizadorUtils.trimLower(dto.cidade()) : null)
-                .endereco(dto.endereco() != null ? NormalizadorUtils.trimLower(dto.endereco()) : null)
+                .cidade(dto.cidade() != null ? NormalizadorUtils.trimUpper(dto.cidade()) : null)
+                .endereco(dto.endereco() != null ? NormalizadorUtils.trimUpper(dto.endereco()) : null)
                 .cep(dto.cep() != null ? NormalizadorUtils.apenasNumeros(dto.cep()) : null)
                 .build();
     }

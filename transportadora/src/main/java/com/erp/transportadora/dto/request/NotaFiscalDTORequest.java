@@ -4,17 +4,12 @@ import jakarta.validation.constraints.NotBlank;
 
 public record NotaFiscalDTORequest(
         String numero,
-
         @NotBlank(message = "Remetente é obrigatório")
         String remetente,
-
         String destinatario,
-        @NotBlank
+        String cep,
         String cidade,
-
         String endereco,
-
-        String status
-
-) {
-}
+        Double valor,
+        Integer volumes
+) {}

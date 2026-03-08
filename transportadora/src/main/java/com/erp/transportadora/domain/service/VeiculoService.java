@@ -1,13 +1,14 @@
 package com.erp.transportadora.domain.service;
 
 import com.erp.transportadora.domain.entity.VeiculoEntity;
-import com.erp.transportadora.domain.mapper.MotoristaMapper;
 import com.erp.transportadora.domain.mapper.VeiculoMapper;
 import com.erp.transportadora.domain.repository.VeiculoRepository;
-import com.erp.transportadora.dto.response.MotoristaDTOResponse;
+import com.erp.transportadora.dto.request.VeiculoDTORequest;
 import com.erp.transportadora.dto.response.VeiculoDTOResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -16,15 +17,23 @@ import java.util.List;
 public class VeiculoService {
     private final VeiculoRepository repository;
 
-    public VeiculoEntity salvar(VeiculoEntity veiculo){
-        if (repository.existsByPlaca(veiculo.getPlaca())){
-            throw new RuntimeException("Erro: Já existe esse veículo cadastrado" + veiculo.getPlaca());
+    public VeiculoEntity salvar(VeiculoEntity veiculo) {
+        if (repository.existsByPlaca(veiculo.getPlaca())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Placa já existente");
         }
         return repository.save(veiculo);
     }
 
-    public VeiculoEntity buscarPorId(Long id){
-        return repository.findById(id).orElseThrow(()-> new RuntimeException("Veiculo não encontrado"));
+    public VeiculoEntity atualizar(Long id, VeiculoDTORequest dto) {
+        VeiculoEntity entity = buscarPorId(id);
+        entity.setPlaca(dto.placa() != null ? dto.placa() : null);
+        entity.setModelo(dto.modelo() != null ? dto.modelo() : null);
+
+        return repository.save(entity);
+    }
+
+    public VeiculoEntity buscarPorId(Long id) {
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Veiculo não encontrado"));
     }
 
     public List<VeiculoDTOResponse> listarTodos() {
@@ -34,8 +43,13 @@ public class VeiculoService {
                 .toList();
     }
 
-    public List<VeiculoDTOResponse> buscarPorPlaca(String placa){
+    public List<VeiculoDTOResponse> buscarPorPlaca(String placa) {
         return repository.findByPlacaContainingIgnoreCase(placa).stream().map(VeiculoMapper::toResponse).toList();
+    }
+
+    public void excluir(Long id) {
+        buscarPorId(id);
+        repository.deleteById(id);
     }
 
 }

@@ -4,10 +4,12 @@ import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.domain.service.NotaFiscalService;
 import com.erp.transportadora.dto.request.NotaFiscalDTORequest;
 import com.erp.transportadora.dto.response.NotaFiscalDTOResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -24,6 +26,11 @@ public class NotaFiscalController {
     @PostMapping
     public ResponseEntity<NotaFiscalDTOResponse> criar(@RequestBody NotaFiscalDTORequest dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(dto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<NotaFiscalEntity> atualizar(@PathVariable Long id, @RequestBody NotaFiscalDTORequest dto) {
+        return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
     @GetMapping
@@ -48,5 +55,11 @@ public class NotaFiscalController {
     @GetMapping("/disponiveis")
     public ResponseEntity<List<NotaFiscalDTOResponse>> listarDisponiveis() {
         return ResponseEntity.ok(service.listarDisponiveis());
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id){
+        service.excluir(id);
+        return ResponseEntity.noContent().build();
     }
 }

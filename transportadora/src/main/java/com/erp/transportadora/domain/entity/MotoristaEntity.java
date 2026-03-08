@@ -26,7 +26,4 @@ public class MotoristaEntity {
 
     @Column(nullable = false)
     private String telefone;
-
-    @Column(nullable = false)
-    private Boolean ativo = true;
 }

@@ -24,13 +24,26 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(dto));
     }
 
-    @GetMapping
-    public ResponseEntity<List<ClienteDTOResponse>> listarTodos() {
-        return ResponseEntity.ok(service.listarTodos());
+    @PutMapping("/{id}")
+    public ResponseEntity<ClienteEntity> atualizar(@PathVariable Long id, @Valid @RequestBody ClienteDTORequest dto) {
+        return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ClienteEntity> buscar(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
+
+    @GetMapping
+    public ResponseEntity<List<ClienteDTOResponse>> listarTodos() {
+        return ResponseEntity.ok(service.listarTodos());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
