@@ -1,6 +1,8 @@
 package com.erp.transportadora.dto.request;
 
-public record CargaDTORequest (
+public record CargaDTORequest(
         Long veiculoId,
-        Long motoristaId
-){}
+        Long motoristaId,
+        Long ajudanteId,
+        Integer diasRota
+) {}

@@ -24,8 +24,13 @@ public class CargaController {
     private final CargaService service;
 
     @PostMapping
-    public ResponseEntity<CargaDTOResponse> criar(@RequestBody CargaDTORequest dto){
+    public ResponseEntity<CargaDTOResponse> criar(@RequestBody CargaDTORequest dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(dto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CargaDTOResponse> atualizar(@PathVariable Long id, @RequestBody CargaDTORequest dto) {
+        return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
     @PostMapping("/{cargaId}/notas/{notaId}")
@@ -56,6 +61,12 @@ public class CargaController {
             @RequestParam(defaultValue = "10") int size
     ) {
         return ResponseEntity.ok(service.listar(motoristaId, veiculoId, numeroCarga, dataInicio, dataFim, page, size));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        service.excluir(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -6,9 +6,7 @@ public record FolhaMotoristaDTOResponse(
         String apelido,
         String cpf,
         String telefone,
-        Integer diasTrabalhados,
-        Double valorDiaria,
-        Double descontos,
-        Double totalBruto,
-        Double valorLiquido
+        Integer diasComoMotorista,
+        Integer diasComoAjudante,
+        Double valorDiaria
 ) {}

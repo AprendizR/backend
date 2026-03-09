@@ -30,7 +30,7 @@ public class CargaEntity {
     @JoinColumn(name = "motorista_id")
     private MotoristaEntity motorista;
 
-    @OneToMany(mappedBy = "carga", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "carga", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Builder.Default
     @JsonIgnoreProperties("carga")
     private List<NotaFiscalEntity> notasFiscais = new ArrayList<>();
@@ -41,6 +41,14 @@ public class CargaEntity {
 
     @Column(unique = true)
     private Long numeroRota;
+
+    @ManyToOne
+    @JoinColumn(name = "ajudante_id")
+    private MotoristaEntity ajudante;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer diasRota = 1;
 
 
     private LocalDateTime dataCriacao;

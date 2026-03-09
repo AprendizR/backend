@@ -41,6 +41,7 @@ public class CargaService {
     public CargaDTOResponse criar(CargaDTORequest dto) {
         VeiculoEntity veiculo = veiculoRepository.findById(dto.veiculoId()).orElseThrow(() -> new RuntimeException("Veículo não encontrado"));
         MotoristaEntity motorista = motoristaRepository.findById(dto.motoristaId()).orElseThrow(() -> new RuntimeException("Motorista não encontrado"));
+        int diasRota = dto.diasRota() != null ? dto.diasRota() : 1;
         Long proximoNumero = cargaRepository.findMaxNumeroRota() + 1;
 
         CargaEntity carga = new CargaEntity();
@@ -49,12 +50,53 @@ public class CargaService {
         carga.setNumeroRota(proximoNumero);
         carga.setStatusCarga(StatusCarga.CENTRO_DISTRIBUICAO);
         carga.setDataCriacao(LocalDateTime.now());
+        carga.setDiasRota(diasRota);
+
+        if (dto.ajudanteId() != null) {
+            MotoristaEntity ajudante = motoristaRepository.findById(dto.ajudanteId())
+                    .orElseThrow(() -> new RuntimeException("Ajudante não encontrado"));
+            carga.setAjudante(ajudante);
+            ajudante.setDiasComoAjudante(ajudante.getDiasComoAjudante() + diasRota);
+            motoristaRepository.save(ajudante);
+        }
 
         CargaEntity salva = cargaRepository.save(carga);
 
-        motorista.setDiasTrabalhados(motorista.getDiasTrabalhados() + 1);
+        motorista.setDiasComoMotorista(motorista.getDiasComoMotorista() + diasRota);
         motoristaRepository.save(motorista);
 
+        return new CargaDTOResponse(
+                salva.getId(),
+                salva.getNumeroRota(),
+                salva.getStatusCarga(),
+                veiculo.getId(),
+                motorista.getId(),
+                salva.getDataCriacao()
+        );
+    }
+
+    @Transactional
+    public CargaDTOResponse atualizar(Long id, CargaDTORequest dto) {
+        CargaEntity carga = cargaRepository.findById(id).orElseThrow(() -> new RuntimeException("Carga não encontrada"));
+        VeiculoEntity veiculo = dto.veiculoId() != null ? veiculoRepository.findById(dto.veiculoId())
+                .orElseThrow(() -> new RuntimeException("Veículo não encontrado")) : carga.getVeiculo();
+
+        MotoristaEntity motorista = dto.motoristaId() != null ? motoristaRepository.findById(dto.motoristaId())
+                .orElseThrow(() -> new RuntimeException("Motorista não encontrado")) : carga.getMotorista();
+
+        carga.setVeiculo(veiculo);
+        carga.setMotorista(motorista);
+        carga.setDiasRota(dto.diasRota() != null ? dto.diasRota() : 1);
+
+        if (dto.ajudanteId() != null) {
+            MotoristaEntity ajudante = motoristaRepository.findById(dto.ajudanteId())
+                    .orElseThrow(() -> new RuntimeException("Ajudante não encontrado"));
+            carga.setAjudante(ajudante);
+        } else {
+            carga.setAjudante(null);
+        }
+
+        CargaEntity salva = cargaRepository.save(carga);
         return new CargaDTOResponse(
                 salva.getId(),
                 salva.getNumeroRota(),
@@ -112,18 +154,18 @@ public class CargaService {
     }
 
     public void recalcularStatus(CargaEntity carga) {
-        if (carga.getNotasFiscais().isEmpty()){
+        if (carga.getNotasFiscais().isEmpty()) {
             carga.setStatusCarga(StatusCarga.CENTRO_DISTRIBUICAO);
             cargaRepository.save(carga);
             return;
         }
 
         boolean todasFinalizadas = carga.getNotasFiscais().stream().allMatch(n -> n.getStatus() != StatusNota.PENDENTE
-        && n.getStatus() != StatusNota.EM_ROTA);
+                && n.getStatus() != StatusNota.EM_ROTA);
         boolean algumasFinalizadas = carga.getNotasFiscais().stream().anyMatch(n -> n.getStatus() != StatusNota.PENDENTE
-        && n.getStatus() != StatusNota.EM_ROTA);
+                && n.getStatus() != StatusNota.EM_ROTA);
 
-        if (todasFinalizadas){
+        if (todasFinalizadas) {
             carga.setStatusCarga(StatusCarga.ENTREGUE);
         } else if (algumasFinalizadas) {
             carga.setStatusCarga(StatusCarga.EM_ROTA);
@@ -139,6 +181,34 @@ public class CargaService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dataCriacao").descending());
         Specification<CargaEntity> spec = CargaSpecification.filtrar(motoristaId, veiculoId, numeroCarga, dataInicio, dataFim);
         return cargaRepository.findAll(spec, pageable).map(CargaMapper::toResumo);
+    }
+
+    @Transactional
+    public void excluir(Long id) {
+        CargaEntity carga = cargaRepository.buscarComNotas(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carga não encontrada"));
+
+        int dias = carga.getDiasRota() != null ? carga.getDiasRota() : 1;
+
+        MotoristaEntity motorista = carga.getMotorista();
+        if (motorista != null) {
+            motorista.setDiasComoMotorista(Math.max(0, motorista.getDiasComoMotorista() - dias));
+            motoristaRepository.save(motorista);
+        }
+
+        MotoristaEntity ajudante = carga.getAjudante();
+        if (ajudante != null) {
+            ajudante.setDiasComoAjudante(Math.max(0, ajudante.getDiasComoAjudante() - dias));
+            motoristaRepository.save(ajudante);
+        }
+
+        for (NotaFiscalEntity nota : carga.getNotasFiscais()) {
+            nota.setCarga(null);
+            nota.setStatus(StatusNota.PENDENTE);
+            notaFiscalRepository.save(nota);
+        }
+
+        cargaRepository.delete(carga);
     }
 
 }

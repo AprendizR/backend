@@ -38,21 +38,35 @@ public class CargaMapper {
     }
 
     public static CargaDTOResumo toResumo(CargaEntity carga) {
+        MotoristaDTOResponse motorista = new MotoristaDTOResponse(
+                carga.getMotorista().getId(),
+                carga.getMotorista().getNome(),
+                carga.getMotorista().getApelido(),
+                carga.getMotorista().getCpf(),
+                carga.getMotorista().getTelefone()
+        );
+
+        MotoristaDTOResponse ajudante = carga.getAjudante() != null ? new MotoristaDTOResponse(
+                carga.getAjudante().getId(),
+                carga.getAjudante().getNome(),
+                carga.getAjudante().getApelido(),
+                carga.getAjudante().getCpf(),
+                carga.getAjudante().getTelefone()
+        ) : null;
+
+        VeiculoDTOResponse veiculo = new VeiculoDTOResponse(
+                carga.getVeiculo().getId(),
+                carga.getVeiculo().getPlaca(),
+                carga.getVeiculo().getModelo()
+        );
+
         return new CargaDTOResumo(
                 carga.getId(),
                 carga.getNumeroRota(),
                 carga.getStatusCarga(),
-                new MotoristaDTORequest(
-                        carga.getMotorista().getNome(),
-                        carga.getMotorista().getApelido(),
-                        carga.getMotorista().getCpf(),
-                        carga.getMotorista().getTelefone(),
-                        carga.getMotorista().getValorDiaria()
-                ),
-                new VeiculoDTORequest(
-                        carga.getVeiculo().getPlaca(),
-                        carga.getVeiculo().getModelo()
-                ),
+                motorista,
+                ajudante,
+                veiculo,
                 carga.getDataCriacao()
         );
     }

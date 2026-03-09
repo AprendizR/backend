@@ -29,7 +29,11 @@ public class MotoristaEntity {
 
     @Column(nullable = false)
     @Builder.Default
-    private Integer diasTrabalhados = 0;
+    private Integer diasComoMotorista = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer diasComoAjudante = 0;
 
     @Column(nullable = false)
     @Builder.Default

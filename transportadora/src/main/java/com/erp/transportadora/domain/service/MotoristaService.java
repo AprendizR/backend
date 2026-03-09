@@ -56,7 +56,8 @@ public class MotoristaService {
     }
 
     public List<MotoristaDTOResponse> buscarPorNome(String nome) {
-        return motoristaRepository.findByNomeContainingIgnoreCase(nome).stream().map(MotoristaMapper::toResponse).toList();
+        return motoristaRepository.findByNomeContainingIgnoreCaseOrApelidoContainingIgnoreCase(nome, nome)
+                .stream().map(MotoristaMapper::toResponse).toList();
     }
 
     public void excluir(Long id) {
@@ -69,25 +70,22 @@ public class MotoristaService {
 
     public void zerarDias(Long id){
         MotoristaEntity entity = buscaPorId(id);
-        entity.setDiasTrabalhados(0);
+        entity.setDiasComoAjudante(0);
+        entity.setDiasComoMotorista(0);
         motoristaRepository.save(entity);
     }
 
     public FolhaMotoristaDTOResponse gerarFolha(Long id) {
         MotoristaEntity motorista = buscaPorId(id);
-        Double totalBruto = motorista.getDiasTrabalhados() * motorista.getValorDiaria();
-        Double valorLiquido = totalBruto - motorista.getDescontos();
         return new FolhaMotoristaDTOResponse(
                 motorista.getId(),
                 motorista.getNome(),
                 motorista.getApelido(),
                 motorista.getCpf(),
                 motorista.getTelefone(),
-                motorista.getDiasTrabalhados(),
-                motorista.getValorDiaria(),
-                motorista.getDescontos(),
-                totalBruto,
-                valorLiquido
+                motorista.getDiasComoMotorista(),
+                motorista.getDiasComoAjudante(),
+                motorista.getValorDiaria()
         );
     }
 
