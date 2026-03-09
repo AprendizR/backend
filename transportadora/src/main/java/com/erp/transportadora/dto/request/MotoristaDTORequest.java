@@ -4,5 +4,6 @@ public record MotoristaDTORequest (
         String nome,
         String apelido,
         String cpf,
-        String telefone
+        String telefone,
+        Double valorDiaria
 ){}

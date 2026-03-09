@@ -52,6 +52,9 @@ public class CargaService {
 
         CargaEntity salva = cargaRepository.save(carga);
 
+        motorista.setDiasTrabalhados(motorista.getDiasTrabalhados() + 1);
+        motoristaRepository.save(motorista);
+
         return new CargaDTOResponse(
                 salva.getId(),
                 salva.getNumeroRota(),

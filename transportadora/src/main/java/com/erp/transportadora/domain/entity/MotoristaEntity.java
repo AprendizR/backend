@@ -26,4 +26,16 @@ public class MotoristaEntity {
 
     @Column(nullable = false)
     private String telefone;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer diasTrabalhados = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Double valorDiaria = 0.0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Double descontos = 0.0;
 }

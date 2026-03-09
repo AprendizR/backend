@@ -12,6 +12,7 @@ public class MotoristaMapper {
                 .apelido(NormalizadorUtils.trimUpper(dto.getApelido()))
                 .cpf(NormalizadorUtils.apenasNumeros(dto.getCpf()))
                 .telefone(NormalizadorUtils.apenasNumeros(dto.getTelefone()))
+                .valorDiaria(dto.getValorDiaria() != null ? dto.getValorDiaria() : 0.0)
                 .build();
     }
 

@@ -5,6 +5,7 @@ import com.erp.transportadora.domain.mapper.MotoristaMapper;
 import com.erp.transportadora.domain.repository.CargaRepository;
 import com.erp.transportadora.domain.repository.MotoristaRepository;
 import com.erp.transportadora.dto.request.MotoristaDTORequest;
+import com.erp.transportadora.dto.response.FolhaMotoristaDTOResponse;
 import com.erp.transportadora.dto.response.MotoristaDTOResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class MotoristaService {
         entity.setApelido(dto.apelido() != null && !dto.apelido().isBlank() ? dto.apelido() : entity.getNome());
         entity.setCpf(dto.cpf() != null ? dto.cpf() : null);
         entity.setTelefone(dto.telefone() != null ? dto.telefone() : null);
+        entity.setValorDiaria(dto.valorDiaria() != null ? dto.valorDiaria() : null);
 
         return motoristaRepository.save(entity);
     }
@@ -63,6 +65,35 @@ public class MotoristaService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Motorista possui em cargas");
         }
         motoristaRepository.deleteById(id);
+    }
 
+    public void zerarDias(Long id){
+        MotoristaEntity entity = buscaPorId(id);
+        entity.setDiasTrabalhados(0);
+        motoristaRepository.save(entity);
+    }
+
+    public FolhaMotoristaDTOResponse gerarFolha(Long id) {
+        MotoristaEntity motorista = buscaPorId(id);
+        Double totalBruto = motorista.getDiasTrabalhados() * motorista.getValorDiaria();
+        Double valorLiquido = totalBruto - motorista.getDescontos();
+        return new FolhaMotoristaDTOResponse(
+                motorista.getId(),
+                motorista.getNome(),
+                motorista.getApelido(),
+                motorista.getCpf(),
+                motorista.getTelefone(),
+                motorista.getDiasTrabalhados(),
+                motorista.getValorDiaria(),
+                motorista.getDescontos(),
+                totalBruto,
+                valorLiquido
+        );
+    }
+
+    public MotoristaEntity atualizarDescontos(Long id, Double descontos) {
+        MotoristaEntity motorista = buscaPorId(id);
+        motorista.setDescontos(descontos);
+        return motoristaRepository.save(motorista);
     }
 }

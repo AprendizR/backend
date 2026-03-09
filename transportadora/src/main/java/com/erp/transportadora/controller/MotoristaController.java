@@ -3,6 +3,7 @@ package com.erp.transportadora.controller;
 import com.erp.transportadora.domain.entity.MotoristaEntity;
 import com.erp.transportadora.domain.service.MotoristaService;
 import com.erp.transportadora.dto.request.MotoristaDTORequest;
+import com.erp.transportadora.dto.response.FolhaMotoristaDTOResponse;
 import com.erp.transportadora.dto.response.MotoristaDTOResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,5 +53,21 @@ public class MotoristaController {
     public ResponseEntity<MotoristaEntity> deletar(@PathVariable Long id) {
         service.excluir(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/zerar-dias")
+    public ResponseEntity<Void> zerarDias(@PathVariable Long id) {
+        service.zerarDias(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("{id}/folha")
+    public ResponseEntity<FolhaMotoristaDTOResponse> folha(@PathVariable Long id) {
+        return ResponseEntity.ok(service.gerarFolha(id));
+    }
+
+    @PutMapping("/{id}/descontos")
+    public ResponseEntity<MotoristaEntity> atualizarDescontos(@PathVariable Long id, @RequestParam Double descontos) {
+        return ResponseEntity.ok(service.atualizarDescontos(id, descontos));
     }
 }

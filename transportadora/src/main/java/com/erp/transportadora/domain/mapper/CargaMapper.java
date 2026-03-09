@@ -18,7 +18,8 @@ public class CargaMapper {
                         carga.getMotorista().getNome(),
                         carga.getMotorista().getApelido(),
                         carga.getMotorista().getCpf(),
-                        carga.getMotorista().getTelefone()
+                        carga.getMotorista().getTelefone(),
+                        carga.getMotorista().getValorDiaria()
                 ),
                 new VeiculoDTORequest(
                         carga.getVeiculo().getPlaca(),
@@ -45,7 +46,8 @@ public class CargaMapper {
                         carga.getMotorista().getNome(),
                         carga.getMotorista().getApelido(),
                         carga.getMotorista().getCpf(),
-                        carga.getMotorista().getTelefone()
+                        carga.getMotorista().getTelefone(),
+                        carga.getMotorista().getValorDiaria()
                 ),
                 new VeiculoDTORequest(
                         carga.getVeiculo().getPlaca(),
