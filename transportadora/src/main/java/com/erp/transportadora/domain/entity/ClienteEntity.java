@@ -21,5 +21,6 @@ public class ClienteEntity {
     private String cnpj;
     private String cidade;
     private String endereco;
+    private String bairro;
     private String cep;
 }

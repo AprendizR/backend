@@ -13,5 +13,6 @@ public record ClienteDTORequest (
 
     String cidade,
     String endereco,
+    String bairro,
     String cep
 ){}

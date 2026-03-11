@@ -6,5 +6,6 @@ public record ClienteDTOResponse (
         String cnpj,
         String cidade,
         String endereco,
+        String bairro,
         String cep
 ){}

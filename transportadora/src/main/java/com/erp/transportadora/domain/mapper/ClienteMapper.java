@@ -16,6 +16,7 @@ public class ClienteMapper {
                 .cnpj(dto.cnpj() != null ? NormalizadorUtils.apenasNumeros(dto.cnpj()) : null)
                 .cidade(dto.cidade() != null ? NormalizadorUtils.trimUpper(dto.cidade()) : null)
                 .endereco(dto.endereco() != null ? NormalizadorUtils.trimUpper(dto.endereco()) : null)
+                .bairro(dto.bairro() != null ? NormalizadorUtils.trimUpper(dto.bairro()) : null)
                 .cep(dto.cep() != null ? NormalizadorUtils.apenasNumeros(dto.cep()) : null)
                 .build();
     }
@@ -27,6 +28,7 @@ public class ClienteMapper {
                 entity.getCnpj(),
                 entity.getCidade(),
                 entity.getEndereco(),
+                entity.getBairro(),
                 entity.getCep()
         );
     }
