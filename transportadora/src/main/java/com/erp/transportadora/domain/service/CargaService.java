@@ -77,24 +77,35 @@ public class CargaService {
 
     @Transactional
     public CargaDTOResponse atualizar(Long id, CargaDTORequest dto) {
-        CargaEntity carga = cargaRepository.findById(id).orElseThrow(() -> new RuntimeException("Carga não encontrada"));
+        CargaEntity carga = cargaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Carga não encontrada"));
+        int diasAntigos = carga.getDiasRota() != null ? carga.getDiasRota() : 1;
+        int diasNovos = dto.diasRota() != null ? dto.diasRota() : 1;
         VeiculoEntity veiculo = dto.veiculoId() != null ? veiculoRepository.findById(dto.veiculoId())
                 .orElseThrow(() -> new RuntimeException("Veículo não encontrado")) : carga.getVeiculo();
-
         MotoristaEntity motorista = dto.motoristaId() != null ? motoristaRepository.findById(dto.motoristaId())
                 .orElseThrow(() -> new RuntimeException("Motorista não encontrado")) : carga.getMotorista();
 
-        carga.setVeiculo(veiculo);
-        carga.setMotorista(motorista);
-        carga.setDiasRota(dto.diasRota() != null ? dto.diasRota() : 1);
+        MotoristaEntity ajudanteAntigo = carga.getAjudante();
+        
+        if (ajudanteAntigo != null) {
+            ajudanteAntigo.setDiasComoAjudante(Math.max(0, ajudanteAntigo.getDiasComoAjudante() - diasAntigos));
+            motoristaRepository.save(ajudanteAntigo);
+        }
 
         if (dto.ajudanteId() != null) {
-            MotoristaEntity ajudante = motoristaRepository.findById(dto.ajudanteId())
+            MotoristaEntity ajudanteNovo = motoristaRepository.findById(dto.ajudanteId())
                     .orElseThrow(() -> new RuntimeException("Ajudante não encontrado"));
-            carga.setAjudante(ajudante);
+            ajudanteNovo.setDiasComoAjudante(ajudanteNovo.getDiasComoAjudante() + diasNovos);
+            motoristaRepository.save(ajudanteNovo);
+            carga.setAjudante(ajudanteNovo);
         } else {
             carga.setAjudante(null);
         }
+
+        carga.setVeiculo(veiculo);
+        carga.setMotorista(motorista);
+        carga.setDiasRota(diasNovos);
 
         CargaEntity salva = cargaRepository.save(carga);
         return new CargaDTOResponse(
