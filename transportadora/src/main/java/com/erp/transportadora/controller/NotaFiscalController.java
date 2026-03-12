@@ -4,17 +4,21 @@ import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.domain.service.NotaFiscalService;
 import com.erp.transportadora.dto.request.NotaFiscalDTORequest;
 import com.erp.transportadora.dto.response.NotaFiscalDTOResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -58,8 +62,45 @@ public class NotaFiscalController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Long id){
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
         service.excluir(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/foto")
+    public ResponseEntity<Void> uploadFoto(@PathVariable Long id, @RequestParam("arquivo") MultipartFile arquivo) {
+        service.salvarFoto(id, arquivo);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/foto")
+    public ResponseEntity<Void> removerFoto(@PathVariable Long id) {
+        service.removerFoto(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/foto")
+    public ResponseEntity<Resource> buscarFoto(@PathVariable Long id) {
+        NotaFiscalEntity nota = service.buscaPorId(id);
+
+        if (nota.getFotoComprovantePath() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            Path caminho = Paths.get("uploads").resolve(nota.getFotoComprovantePath());
+            Resource resource = new UrlResource(caminho.toUri());
+
+            if (!resource.exists()) return ResponseEntity.notFound().build();
+
+            String contentType = Files.probeContentType(caminho);
+            if (contentType == null) contentType = "application/octet-stream";
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

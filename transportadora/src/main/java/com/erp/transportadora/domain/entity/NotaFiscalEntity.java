@@ -57,8 +57,6 @@ public class NotaFiscalEntity {
     private String endereco;
     private Double valor;
     private Integer volumes;
-    private Double latitude;
-    private Double longitude;
     private String observacao;
     private Integer ordemEntrega;
     private LocalDateTime dataEntrega;

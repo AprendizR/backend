@@ -4,5 +4,7 @@ public record NotaFiscalDTOResumo(
         Long id,
         Long ordemServico,
         String numero,
-        Boolean entregue
-){}
+        boolean entregue,
+        boolean temFoto,
+        boolean isPdf
+) {}

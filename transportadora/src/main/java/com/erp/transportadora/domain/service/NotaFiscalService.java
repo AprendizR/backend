@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ import java.util.List;
 @AllArgsConstructor
 public class NotaFiscalService {
     private final NotaFiscalRepository repository;
+    private final StorageService storageService;
 
     @Transactional
     public NotaFiscalDTOResponse criar(NotaFiscalDTORequest dto) {
@@ -73,5 +75,32 @@ public class NotaFiscalService {
     public void excluir(Long id) {
         buscaPorId(id);
         repository.deleteById(id);
+    }
+
+    @Transactional
+    public void salvarFoto(Long id, MultipartFile arquivo) {
+        NotaFiscalEntity nota = buscaPorId(id);
+
+        // remove foto antiga se existir
+        if (nota.getFotoComprovantePath() != null) {
+            storageService.deletar(nota.getFotoComprovantePath());
+        }
+
+        String caminho = storageService.salvar(arquivo, "nota_" + id);
+        nota.setFotoComprovantePath(caminho);
+        repository.save(nota);
+    }
+
+    @Transactional
+    public void removerFoto(Long id) {
+        NotaFiscalEntity nota = buscaPorId(id);
+
+        if (nota.getFotoComprovantePath() == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma foto encontrada");
+        }
+
+        storageService.deletar(nota.getFotoComprovantePath());
+        nota.setFotoComprovantePath(null);
+        repository.save(nota);
     }
 }

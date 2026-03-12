@@ -30,6 +30,8 @@ public class CargaMapper {
                                 n.getId(),
                                 n.getOrdemServico(),
                                 n.getNumero(),
+                                n.getFotoComprovantePath() != null,
+                                n.getFotoComprovantePath() != null && n.getFotoComprovantePath().endsWith(".pdf"),
                                 isFinalizada(n)
                         ))
                         .toList(),
