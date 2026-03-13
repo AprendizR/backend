@@ -6,6 +6,8 @@ import com.erp.transportadora.dto.response.FaturamentoDTOClienteResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -13,8 +15,11 @@ import java.util.*;
 public class FaturamentoService {
     private final NotaFiscalRepository repository;
 
-    public List<FaturamentoDTOClienteResponse> listar() {
-        List<Object[]> resultados = repository.buscarFaturamentoPorClienteECidade();
+    public List<FaturamentoDTOClienteResponse> listar(LocalDate dataInicio, LocalDate dataFim) {
+        LocalDateTime inicio = dataInicio != null ? dataInicio.atStartOfDay() : LocalDateTime.of(2000, 1, 1, 0, 0);
+        LocalDateTime fim = dataFim != null ? dataFim.atTime(23, 59, 59) : LocalDateTime.of(2099, 12, 31, 23, 59);
+
+        List<Object[]> resultados = repository.buscarFaturamentoPorClienteECidade(inicio, fim);
         Map<Long, List<Object[]>> agrupado = new LinkedHashMap<>();
 
         for (Object[] row : resultados) {

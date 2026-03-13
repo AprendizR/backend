@@ -6,6 +6,7 @@ import org.aspectj.weaver.ast.Not;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,11 +25,17 @@ public interface NotaFiscalRepository extends JpaRepository<NotaFiscalEntity, Lo
 
     List<NotaFiscalEntity> findByCargaIsNullAndStatus(StatusNota status);
 
-    @Query("SELECT n.cliente.id, n.cliente.nome, n.cidade, COUNT(n), COALESCE(SUM(n.frete), 0) " +
-            "FROM NotaFiscalEntity n " +
-            "WHERE n.cliente IS NOT NULL " +
+    @Query(value = "SELECT n.cliente_id, c.nome, n.cidade, COUNT(n.id), COALESCE(SUM(n.frete), 0) " +
+            "FROM notas_fiscais n " +
+            "JOIN clientes c ON c.id = n.cliente_id " +
+            "WHERE n.cliente_id IS NOT NULL " +
             "AND n.status NOT IN ('PENDENTE', 'EM_ROTA') " +
-            "GROUP BY n.cliente.id, n.cliente.nome, n.cidade " +
-            "ORDER BY n.cliente.nome, COUNT(n) DESC")
-    List<Object[]> buscarFaturamentoPorClienteECidade();
+            "AND n.data_emissao >= :dataInicio " +
+            "AND n.data_emissao <= :dataFim " +
+            "GROUP BY n.cliente_id, c.nome, n.cidade " +
+            "ORDER BY c.nome, COUNT(n.id) DESC", nativeQuery = true)
+    List<Object[]> buscarFaturamentoPorClienteECidade(
+            @Param("dataInicio") LocalDateTime dataInicio,
+            @Param("dataFim") LocalDateTime dataFim
+    );
 }
