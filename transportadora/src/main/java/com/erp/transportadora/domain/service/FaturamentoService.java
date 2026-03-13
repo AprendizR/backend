@@ -14,21 +14,31 @@ public class FaturamentoService {
     private final NotaFiscalRepository repository;
 
     public List<FaturamentoDTOClienteResponse> listar() {
-        List<Object[]> resultados = repository.buscarFaturamentoPorRemetenteECidade();
-        Map<String, List<FaturamentoDTOCidadeResponse>> agrupado = new LinkedHashMap<>();
+        List<Object[]> resultados = repository.buscarFaturamentoPorClienteECidade();
+        Map<Long, List<Object[]>> agrupado = new LinkedHashMap<>();
 
         for (Object[] row : resultados) {
-            String remetente = (String) row[0];
-            String cidade = (String) row[1];
-            Long total = (Long) row[2];
-
-            agrupado.computeIfAbsent(remetente, k -> new ArrayList<>()).add(new FaturamentoDTOCidadeResponse(cidade, total));
+            Long clienteId = (Long) row[0];
+            agrupado.computeIfAbsent(clienteId, k -> new ArrayList<>()).add(row);
         }
 
-        return agrupado.entrySet().stream().map(e -> new FaturamentoDTOClienteResponse(
-                e.getKey(),
-                e.getValue().stream().mapToLong(FaturamentoDTOCidadeResponse::totalNotas).sum(),
-                e.getValue()
-        )).toList();
+        return agrupado.entrySet().stream().map(e -> {
+            List<Object[]> rows = e.getValue();
+            String nomeCliente = (String) rows.get(0)[1];
+            Long clienteId = e.getKey();
+
+            List<FaturamentoDTOCidadeResponse> cidades = rows.stream().map(row ->
+                    new FaturamentoDTOCidadeResponse(
+                            (String) row[2],
+                            (Long) row[3],
+                            (Double) row[4]
+                    )
+            ).toList();
+
+            Long totalNotas = cidades.stream().mapToLong(FaturamentoDTOCidadeResponse::totalNotas).sum();
+            Double totalFrete = cidades.stream().mapToDouble(FaturamentoDTOCidadeResponse::totalFrete).sum();
+
+            return new FaturamentoDTOClienteResponse(clienteId, nomeCliente, totalNotas, totalFrete, cidades);
+        }).toList();
     }
 }

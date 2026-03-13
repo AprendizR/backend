@@ -24,9 +24,11 @@ public interface NotaFiscalRepository extends JpaRepository<NotaFiscalEntity, Lo
 
     List<NotaFiscalEntity> findByCargaIsNullAndStatus(StatusNota status);
 
-    @Query("SELECT n.remetente, n.cidade, COUNT(n) FROM NotaFiscalEntity n " +
-            "WHERE n.status NOT IN ('PENDENTE', 'EM_ROTA') " +
-            "GROUP BY n.remetente, n.cidade " +
-            "ORDER BY n.remetente, COUNT(n) DESC")
-    List<Object[]> buscarFaturamentoPorRemetenteECidade();
+    @Query("SELECT n.cliente.id, n.cliente.nome, n.cidade, COUNT(n), COALESCE(SUM(n.frete), 0) " +
+            "FROM NotaFiscalEntity n " +
+            "WHERE n.cliente IS NOT NULL " +
+            "AND n.status NOT IN ('PENDENTE', 'EM_ROTA') " +
+            "GROUP BY n.cliente.id, n.cliente.nome, n.cidade " +
+            "ORDER BY n.cliente.nome, COUNT(n) DESC")
+    List<Object[]> buscarFaturamentoPorClienteECidade();
 }
