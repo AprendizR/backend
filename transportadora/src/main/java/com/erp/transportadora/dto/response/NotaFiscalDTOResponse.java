@@ -4,11 +4,16 @@ public record NotaFiscalDTOResponse(
         Long id,
         Long ordemServico,
         String numero,
+        ClienteDTOResponse cliente,
         String remetente,
         String destinatario,
+        String cep,
         String cidade,
         String endereco,
-        String status,
+        Double frete,
         Double valor,
-        Integer volumes
+        Integer volumes,
+        String status,
+        boolean temFoto,
+        boolean isPdf
 ) {}

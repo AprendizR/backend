@@ -1,8 +1,10 @@
 package com.erp.transportadora.domain.service;
 
+import com.erp.transportadora.domain.entity.ClienteEntity;
 import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.domain.enums.StatusNota;
 import com.erp.transportadora.domain.mapper.NotaFiscalMapper;
+import com.erp.transportadora.domain.repository.ClienteRepository;
 import com.erp.transportadora.domain.repository.NotaFiscalRepository;
 import com.erp.transportadora.domain.spec.NotaFiscalSpecification;
 import com.erp.transportadora.dto.request.NotaFiscalDTORequest;
@@ -28,6 +30,7 @@ import java.util.List;
 @AllArgsConstructor
 public class NotaFiscalService {
     private final NotaFiscalRepository repository;
+    private final ClienteRepository clienteRepository;
     private final StorageService storageService;
 
     @Transactional
@@ -35,13 +38,25 @@ public class NotaFiscalService {
         Long proximaOS = repository.findMaxOrdemServico() + 1;
         NotaFiscalEntity nota = NotaFiscalMapper.toEntity(dto);
         nota.setOrdemServico(proximaOS);
-        NotaFiscalEntity salva = repository.save(nota);
+        if (dto.clienteId() != null){
+            ClienteEntity cliente = clienteRepository.findById(dto.clienteId())
+                    .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente nao encontrado"));
+            nota.setCliente(cliente);
+        }
 
+        NotaFiscalEntity salva = repository.save(nota);
         return NotaFiscalMapper.toResponse(salva);
     }
 
     public NotaFiscalEntity atualizar(Long id, NotaFiscalDTORequest dto) {
         NotaFiscalEntity entity = buscaPorId(id);
+        if (dto.clienteId() != null) {
+            ClienteEntity cliente = clienteRepository.findById(dto.clienteId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
+            entity.setCliente(cliente);
+        } else {
+            entity.setCliente(null);
+        }
         entity.setNumero(NormalizadorUtils.apenasNumeros(dto.numero() != null ? dto.numero() : null));
         entity.setRemetente(NormalizadorUtils.trimUpper(dto.remetente() != null ? dto.remetente() : null));
         entity.setDestinatario(NormalizadorUtils.trimUpper(dto.destinatario() != null ? dto.destinatario() : null));

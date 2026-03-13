@@ -55,6 +55,7 @@ public class NotaFiscalEntity {
     private String cep;
     private String cidade;
     private String endereco;
+    private Double frete;
     private Double valor;
     private Integer volumes;
     private String observacao;

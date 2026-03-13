@@ -1,7 +1,6 @@
 package com.erp.transportadora.domain.mapper;
 
 import com.erp.transportadora.domain.enums.StatusNota;
-import com.erp.transportadora.dto.response.NotaFiscalDTOResumo;
 import com.erp.transportadora.validators.NormalizadorUtils;
 import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.dto.request.NotaFiscalDTORequest;
@@ -19,6 +18,7 @@ public class NotaFiscalMapper {
                 .cep(NormalizadorUtils.apenasNumeros(dto.cep()))
                 .cidade(NormalizadorUtils.trimUpper(dto.cidade()))
                 .endereco(NormalizadorUtils.trimUpper(dto.endereco()))
+                .frete(dto.frete())
                 .valor(dto.valor())
                 .volumes(dto.volumes())
                 .status(StatusNota.PENDENTE)
@@ -31,13 +31,18 @@ public class NotaFiscalMapper {
                 entity.getId(),
                 entity.getOrdemServico(),
                 entity.getNumero(),
+                entity.getCliente() != null ? ClienteMapper.toResponse(entity.getCliente()) : null,
                 entity.getRemetente(),
                 entity.getDestinatario(),
+                entity.getCep(),
                 entity.getCidade(),
                 entity.getEndereco(),
-                entity.getStatus() != null ? entity.getStatus().name() : "PENDENTE",
+                entity.getFrete(),
                 entity.getValor(),
-                entity.getVolumes()
+                entity.getVolumes(),
+                entity.getStatus() != null ? entity.getStatus().name() : "PENDENTE",
+                entity.getFotoComprovantePath() != null,
+                entity.getFotoComprovantePath() != null && entity.getFotoComprovantePath().endsWith(".pdf")
         );
     }
 }
