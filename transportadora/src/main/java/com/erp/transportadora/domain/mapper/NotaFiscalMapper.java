@@ -7,6 +7,7 @@ import com.erp.transportadora.dto.request.NotaFiscalDTORequest;
 import com.erp.transportadora.dto.response.NotaFiscalDTOResponse;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class NotaFiscalMapper {
 
@@ -41,8 +42,7 @@ public class NotaFiscalMapper {
                 entity.getValor(),
                 entity.getVolumes(),
                 entity.getStatus() != null ? entity.getStatus().name() : "PENDENTE",
-                entity.getFotoComprovantePath() != null,
-                entity.getFotoComprovantePath() != null && entity.getFotoComprovantePath().endsWith(".pdf")
+                new ArrayList<>(entity.getFotos())
         );
     }
 }

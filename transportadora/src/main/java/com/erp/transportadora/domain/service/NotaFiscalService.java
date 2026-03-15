@@ -95,27 +95,16 @@ public class NotaFiscalService {
     @Transactional
     public void salvarFoto(Long id, MultipartFile arquivo) {
         NotaFiscalEntity nota = buscaPorId(id);
-
-        // remove foto antiga se existir
-        if (nota.getFotoComprovantePath() != null) {
-            storageService.deletar(nota.getFotoComprovantePath());
-        }
-
         String caminho = storageService.salvar(arquivo, "nota_" + id);
-        nota.setFotoComprovantePath(caminho);
+        nota.getFotos().add(caminho);
         repository.save(nota);
     }
 
     @Transactional
-    public void removerFoto(Long id) {
+    public void removerFoto(Long id, String caminho) {
         NotaFiscalEntity nota = buscaPorId(id);
-
-        if (nota.getFotoComprovantePath() == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma foto encontrada");
-        }
-
-        storageService.deletar(nota.getFotoComprovantePath());
-        nota.setFotoComprovantePath(null);
+        storageService.deletar(caminho);
+        nota.getFotos().remove(caminho);
         repository.save(nota);
     }
 }

@@ -6,6 +6,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -35,8 +39,11 @@ public class NotaFiscalEntity {
     @Builder.Default
     private StatusNota status = StatusNota.PENDENTE;
 
-    @Column(name = "foto_comprovante_path")
-    private String fotoComprovantePath;
+    @ElementCollection
+    @CollectionTable(name = "fotos_nota", joinColumns = @JoinColumn(name = "nota_fiscal_id"))
+    @Column(name = "caminho")
+    @Builder.Default
+    private Set<String> fotos = new LinkedHashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "carga_id")

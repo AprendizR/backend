@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface CargaRepository extends JpaRepository<CargaEntity, Long>, JpaSpecificationExecutor<CargaEntity> {
-    @Query("SELECT c FROM CargaEntity c LEFT JOIN FETCH c.notasFiscais WHERE c.id = :id")
+    @Query("SELECT DISTINCT c FROM CargaEntity c LEFT JOIN FETCH c.notasFiscais WHERE c.id = :id")
     Optional<CargaEntity> buscarComNotas(@Param("id") Long id);
 
     @Query("SELECT coalesce(max(c.numeroRota), 0) FROM CargaEntity c")

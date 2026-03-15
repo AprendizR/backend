@@ -74,28 +74,19 @@ public class NotaFiscalController {
     }
 
     @DeleteMapping("/{id}/foto")
-    public ResponseEntity<Void> removerFoto(@PathVariable Long id) {
-        service.removerFoto(id);
+    public ResponseEntity<Void> removerFoto(@PathVariable Long id, @RequestParam String caminho) {
+        service.removerFoto(id, caminho);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/foto")
-    public ResponseEntity<Resource> buscarFoto(@PathVariable Long id) {
-        NotaFiscalEntity nota = service.buscaPorId(id);
-
-        if (nota.getFotoComprovantePath() == null) {
-            return ResponseEntity.notFound().build();
-        }
-
+    public ResponseEntity<Resource> buscarFoto(@PathVariable Long id, @RequestParam String caminho) {
         try {
-            Path caminho = Paths.get("uploads").resolve(nota.getFotoComprovantePath());
-            Resource resource = new UrlResource(caminho.toUri());
-
+            Path path = Paths.get("uploads").resolve(caminho);
+            Resource resource = new UrlResource(path.toUri());
             if (!resource.exists()) return ResponseEntity.notFound().build();
-
-            String contentType = Files.probeContentType(caminho);
+            String contentType = Files.probeContentType(path);
             if (contentType == null) contentType = "application/octet-stream";
-
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
                     .body(resource);

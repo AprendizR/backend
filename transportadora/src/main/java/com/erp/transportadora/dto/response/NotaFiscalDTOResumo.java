@@ -1,5 +1,7 @@
 package com.erp.transportadora.dto.response;
 
+import java.util.List;
+
 public record NotaFiscalDTOResumo(
         Long id,
         Long ordemServico,
@@ -8,6 +10,5 @@ public record NotaFiscalDTOResumo(
         String cidade,
         String remetente,
         boolean entregue,
-        boolean temFoto,
-        boolean isPdf
+        List<String> fotos
 ) {}

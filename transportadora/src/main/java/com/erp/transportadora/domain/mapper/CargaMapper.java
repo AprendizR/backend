@@ -7,6 +7,8 @@ import com.erp.transportadora.dto.request.MotoristaDTORequest;
 import com.erp.transportadora.dto.request.VeiculoDTORequest;
 import com.erp.transportadora.dto.response.*;
 
+import java.util.ArrayList;
+
 public class CargaMapper {
 
     public static CargaDTODetalhada toDetalhada(CargaEntity carga) {
@@ -42,9 +44,8 @@ public class CargaMapper {
                                 n.getDestinatario(),
                                 n.getCidade(),
                                 n.getRemetente(),
-                                n.getFotoComprovantePath() != null,
-                                n.getFotoComprovantePath() != null && n.getFotoComprovantePath().endsWith(".pdf"),
-                                isFinalizada(n)
+                                isFinalizada(n),
+                                new ArrayList<>(n.getFotos())
                         ))
                         .toList(),
                 carga.getDataCriacao()
