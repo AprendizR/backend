@@ -10,6 +10,14 @@ import com.erp.transportadora.dto.response.*;
 public class CargaMapper {
 
     public static CargaDTODetalhada toDetalhada(CargaEntity carga) {
+        MotoristaDTORequest ajudante = carga.getAjudante() != null ? new MotoristaDTORequest(
+                carga.getAjudante().getNome(),
+                carga.getAjudante().getApelido(),
+                carga.getAjudante().getCpf(),
+                carga.getAjudante().getTelefone(),
+                carga.getAjudante().getValorDiaria()
+        ) : null;
+
         return new CargaDTODetalhada(
                 carga.getId(),
                 carga.getNumeroRota(),
@@ -21,6 +29,7 @@ public class CargaMapper {
                         carga.getMotorista().getTelefone(),
                         carga.getMotorista().getValorDiaria()
                 ),
+                ajudante,
                 new VeiculoDTORequest(
                         carga.getVeiculo().getPlaca(),
                         carga.getVeiculo().getModelo()
@@ -30,6 +39,9 @@ public class CargaMapper {
                                 n.getId(),
                                 n.getOrdemServico(),
                                 n.getNumero(),
+                                n.getDestinatario(),
+                                n.getCidade(),
+                                n.getRemetente(),
                                 n.getFotoComprovantePath() != null,
                                 n.getFotoComprovantePath() != null && n.getFotoComprovantePath().endsWith(".pdf"),
                                 isFinalizada(n)

@@ -12,6 +12,7 @@ public record CargaDTODetalhada(
         Long numeroRota,
         StatusCarga statusCarga,
         MotoristaDTORequest motorista,
+        MotoristaDTORequest ajudante,
         VeiculoDTORequest veiculo,
         List<NotaFiscalDTOResumo> notasFiscais,
         LocalDateTime dataCriacao
