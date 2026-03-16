@@ -16,5 +16,7 @@ public record NotaFiscalDTOResponse(
         Double valor,
         Integer volumes,
         String status,
-        List<String> fotos
+        List<String> fotos,
+        Double latitude,
+        Double longitude
 ) {}

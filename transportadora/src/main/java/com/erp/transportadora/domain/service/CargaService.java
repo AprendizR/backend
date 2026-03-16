@@ -164,6 +164,7 @@ public class CargaService {
         return CargaMapper.toDetalhada(carga);
     }
 
+    @Transactional
     public void recalcularStatus(CargaEntity carga) {
         if (carga.getNotasFiscais().isEmpty()) {
             carga.setStatusCarga(StatusCarga.CENTRO_DISTRIBUICAO);
@@ -188,6 +189,7 @@ public class CargaService {
 
     }
 
+    @Transactional
     public Page<CargaDTOResumo> listar(Long motoristaId, Long veiculoId, Long numeroCarga, LocalDate dataInicio, LocalDate dataFim, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dataCriacao").descending());
         Specification<CargaEntity> spec = CargaSpecification.filtrar(motoristaId, veiculoId, numeroCarga, dataInicio, dataFim);

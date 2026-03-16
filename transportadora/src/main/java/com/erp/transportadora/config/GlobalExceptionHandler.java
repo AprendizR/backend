@@ -38,8 +38,8 @@ public class GlobalExceptionHandler {
     // Tratar exceções genéricas
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
+        ex.printStackTrace(); // já tem isso?
         ErrorResponse response = new ErrorResponse("Erro interno do servidor", null, LocalDateTime.now());
-
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }

@@ -5,6 +5,7 @@ import com.erp.transportadora.domain.mapper.CargaMapper;
 import com.erp.transportadora.domain.repository.CargaRepository;
 import com.erp.transportadora.dto.response.CargaDTODetalhada;
 import com.erp.transportadora.dto.response.NotaFiscalDTOResumo;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -24,6 +25,7 @@ public class RomaneioExcelService {
 
     private final CargaRepository cargaRepository;
 
+    @Transactional
     public byte[] gerarRomaneio(Long cargaId) {
         CargaEntity cargaEntity = cargaRepository.buscarComNotas(cargaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carga não encontrada"));
@@ -44,11 +46,11 @@ public class RomaneioExcelService {
             sheet.setColumnWidth(7, 3000);   // OS COLETA
 
             // estilos
-            XSSFCellStyle estiloAviso = criarEstilo(workbook, new byte[]{(byte)255, 0, 0}, IndexedColors.WHITE.getIndex(), true, 11);
-            XSSFCellStyle estiloCabecalho = criarEstilo(workbook, new byte[]{(byte)200, (byte)200, (byte)200}, IndexedColors.BLACK.getIndex(), true, 10);
-            XSSFCellStyle estiloLabel = criarEstilo(workbook, new byte[]{(byte)220, (byte)220, (byte)220}, IndexedColors.BLACK.getIndex(), true, 10);
+            XSSFCellStyle estiloAviso = criarEstilo(workbook, new byte[]{(byte) 255, 0, 0}, IndexedColors.WHITE.getIndex(), true, 11);
+            XSSFCellStyle estiloCabecalho = criarEstilo(workbook, new byte[]{(byte) 200, (byte) 200, (byte) 200}, IndexedColors.BLACK.getIndex(), true, 10);
+            XSSFCellStyle estiloLabel = criarEstilo(workbook, new byte[]{(byte) 220, (byte) 220, (byte) 220}, IndexedColors.BLACK.getIndex(), true, 10);
             XSSFCellStyle estiloValor = criarEstilo(workbook, null, IndexedColors.BLACK.getIndex(), false, 10);
-            XSSFCellStyle estiloTituloColuna = criarEstilo(workbook, new byte[]{(byte)180, (byte)180, (byte)180}, IndexedColors.BLACK.getIndex(), true, 10);
+            XSSFCellStyle estiloTituloColuna = criarEstilo(workbook, new byte[]{(byte) 180, (byte) 180, (byte) 180}, IndexedColors.BLACK.getIndex(), true, 10);
             XSSFCellStyle estiloLinha = criarEstilo(workbook, null, IndexedColors.BLACK.getIndex(), false, 10);
 
             int row = 0;
@@ -104,7 +106,13 @@ public class RomaneioExcelService {
             }
 
             // notas
-            List<NotaFiscalDTOResumo> notas = carga.notasFiscais();
+            List<NotaFiscalDTOResumo> notas = carga.notasFiscais().stream()
+                    .sorted((a, b) -> {
+                        if (a.ordemEntrega() == null) return 1;
+                        if (b.ordemEntrega() == null) return -1;
+                        return a.ordemEntrega().compareTo(b.ordemEntrega());
+                    })
+                    .toList();
             for (int i = 0; i < 25; i++) {
                 Row linhaRow = sheet.createRow(row++);
                 linhaRow.setHeightInPoints(16);

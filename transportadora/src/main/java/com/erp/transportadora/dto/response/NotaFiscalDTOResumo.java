@@ -10,5 +10,6 @@ public record NotaFiscalDTOResumo(
         String cidade,
         String remetente,
         boolean entregue,
-        List<String> fotos
+        List<String> fotos,
+        Integer ordemEntrega
 ) {}

@@ -45,7 +45,8 @@ public class CargaMapper {
                                 n.getCidade(),
                                 n.getRemetente(),
                                 isFinalizada(n),
-                                new ArrayList<>(n.getFotos())
+                                new ArrayList<>(n.getFotos()),
+                                n.getOrdemEntrega()
                         ))
                         .toList(),
                 carga.getDataCriacao()

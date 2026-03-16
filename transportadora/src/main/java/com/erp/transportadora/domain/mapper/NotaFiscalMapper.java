@@ -22,6 +22,8 @@ public class NotaFiscalMapper {
                 .frete(dto.frete())
                 .valor(dto.valor())
                 .volumes(dto.volumes())
+                .latitude(dto.latitude())
+                .longitude(dto.longitude())
                 .status(StatusNota.PENDENTE)
                 .dataEmissao(LocalDateTime.now())
                 .build();
@@ -42,7 +44,9 @@ public class NotaFiscalMapper {
                 entity.getValor(),
                 entity.getVolumes(),
                 entity.getStatus() != null ? entity.getStatus().name() : "PENDENTE",
-                new ArrayList<>(entity.getFotos())
+                new ArrayList<>(entity.getFotos()),
+                entity.getLatitude(),
+                entity.getLongitude()
         );
     }
 }
