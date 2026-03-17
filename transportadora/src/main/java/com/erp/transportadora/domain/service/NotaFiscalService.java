@@ -35,7 +35,6 @@ public class NotaFiscalService {
 
     @Transactional
     public NotaFiscalDTOResponse criar(NotaFiscalDTORequest dto) {
-        System.out.println("lat=" + dto.latitude() + " lng=" + dto.longitude());
         Long proximaOS = repository.findMaxOrdemServico() + 1;
         NotaFiscalEntity nota = NotaFiscalMapper.toEntity(dto);
         nota.setOrdemServico(proximaOS);
@@ -49,7 +48,8 @@ public class NotaFiscalService {
         return NotaFiscalMapper.toResponse(salva);
     }
 
-    public NotaFiscalEntity atualizar(Long id, NotaFiscalDTORequest dto) {
+    @Transactional
+    public NotaFiscalDTOResponse atualizar(Long id, NotaFiscalDTORequest dto) {
         NotaFiscalEntity entity = buscaPorId(id);
         if (dto.clienteId() != null) {
             ClienteEntity cliente = clienteRepository.findById(dto.clienteId())
@@ -67,9 +67,12 @@ public class NotaFiscalService {
         entity.setVolumes(dto.volumes());
         entity.setCep(dto.cep() != null ? NormalizadorUtils.apenasNumeros(dto.cep()) : null);
 
-        return repository.save(entity);
+        NotaFiscalEntity salva = repository.save(entity);
+
+        return NotaFiscalMapper.toResponse(salva);
     }
 
+    @Transactional
     public NotaFiscalEntity buscaPorId(Long id) {
         return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota fiscal não encontrada"));
     }
@@ -86,6 +89,7 @@ public class NotaFiscalService {
         return repository.findAll(spec, pageable).map(NotaFiscalMapper::toResponse);
     }
 
+    @Transactional
     public void excluir(Long id) {
         buscaPorId(id);
         repository.deleteById(id);

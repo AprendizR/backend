@@ -33,7 +33,7 @@ public class NotaFiscalController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<NotaFiscalEntity> atualizar(@PathVariable Long id, @RequestBody NotaFiscalDTORequest dto) {
+    public ResponseEntity<NotaFiscalDTOResponse> atualizar(@PathVariable Long id, @RequestBody NotaFiscalDTORequest dto) {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
