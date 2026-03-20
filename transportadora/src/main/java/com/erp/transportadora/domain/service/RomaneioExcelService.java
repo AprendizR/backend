@@ -47,7 +47,6 @@ public class RomaneioExcelService {
 
             // estilos
             XSSFCellStyle estiloAviso = criarEstilo(workbook, new byte[]{(byte) 255, 0, 0}, IndexedColors.WHITE.getIndex(), true, 11);
-            XSSFCellStyle estiloCabecalho = criarEstilo(workbook, new byte[]{(byte) 200, (byte) 200, (byte) 200}, IndexedColors.BLACK.getIndex(), true, 10);
             XSSFCellStyle estiloLabel = criarEstilo(workbook, new byte[]{(byte) 220, (byte) 220, (byte) 220}, IndexedColors.BLACK.getIndex(), true, 10);
             XSSFCellStyle estiloValor = criarEstilo(workbook, null, IndexedColors.BLACK.getIndex(), false, 10);
             XSSFCellStyle estiloTituloColuna = criarEstilo(workbook, new byte[]{(byte) 180, (byte) 180, (byte) 180}, IndexedColors.BLACK.getIndex(), true, 10);
@@ -124,7 +123,7 @@ public class RomaneioExcelService {
                     NotaFiscalDTOResumo nota = notas.get(i);
                     numCell.setCellValue(i + 1);
                     criarCelula(linhaRow, 1, nota.numero() != null ? nota.numero() : "", estiloLinha);
-                    criarCelula(linhaRow, 2, "", estiloLinha); // data NF em branco por enquanto
+                    criarCelula(linhaRow, 2, nota.dataEmissao() != null ? nota.dataEmissao().format(DateTimeFormatter.ofPattern("dd/MM")) : "", estiloLinha);
                     criarCelula(linhaRow, 3, nota.destinatario() != null ? nota.destinatario() : "", estiloLinha);
                     criarCelula(linhaRow, 4, nota.cidade() != null ? nota.cidade() : "", estiloLinha);
                     criarCelula(linhaRow, 5, nota.remetente() != null ? nota.remetente() : "", estiloLinha);

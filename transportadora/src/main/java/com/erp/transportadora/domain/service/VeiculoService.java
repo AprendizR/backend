@@ -49,7 +49,7 @@ public class VeiculoService {
     }
 
     public void excluir(Long id) {
-        buscarPorId(id);
+        repository.findById(id);
         repository.deleteById(id);
     }
 

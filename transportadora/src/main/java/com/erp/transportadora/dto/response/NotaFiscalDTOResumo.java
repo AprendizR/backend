@@ -1,5 +1,6 @@
 package com.erp.transportadora.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record NotaFiscalDTOResumo(
@@ -11,5 +12,6 @@ public record NotaFiscalDTOResumo(
         String remetente,
         boolean entregue,
         List<String> fotos,
-        Integer ordemEntrega
+        Integer ordemEntrega,
+        LocalDateTime dataEmissao
 ) {}

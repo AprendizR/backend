@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -70,25 +72,35 @@ public class MotoristaService {
         motoristaRepository.deleteById(id);
     }
 
-    public void zerarDias(Long id) {
-        MotoristaEntity entity = motoristaRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motorista não encontrado"));
-        entity.setDiasComoAjudante(0);
-        entity.setDiasComoMotorista(0);
-        motoristaRepository.save(entity);
-    }
+    public FolhaMotoristaDTOResponse gerarFolha(Long id, LocalDate dataInicio, LocalDate dataFim) {
+        MotoristaEntity motorista = motoristaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motorista não encontrado"));
 
-    public FolhaMotoristaDTOResponse gerarFolha(Long id) {
-        MotoristaEntity motorista = motoristaRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motorista nao encontrado"));
+        int diasComoMotorista;
+        int diasComoAjudante;
+
+        if (dataInicio != null && dataFim != null) {
+            LocalDateTime inicio = dataInicio.atStartOfDay();
+            LocalDateTime fim = dataFim.atTime(23, 59, 59);
+
+            diasComoMotorista = cargaRepository.buscarPorMotoristaEPeriodo(id, inicio, fim)
+                    .stream().mapToInt(c -> c.getDiasRota() != null ? c.getDiasRota() : 1).sum();
+
+            diasComoAjudante = cargaRepository.buscarPorAjudanteEPeriodo(id, inicio, fim)
+                    .stream().mapToInt(c -> c.getDiasRota() != null ? c.getDiasRota() : 1).sum();
+        } else {
+            diasComoMotorista = motorista.getDiasComoMotorista();
+            diasComoAjudante = motorista.getDiasComoAjudante();
+        }
+
         return new FolhaMotoristaDTOResponse(
                 motorista.getId(),
                 motorista.getNome(),
                 motorista.getApelido(),
                 motorista.getCpf(),
                 motorista.getTelefone(),
-                motorista.getDiasComoMotorista(),
-                motorista.getDiasComoAjudante(),
+                diasComoMotorista,
+                diasComoAjudante,
                 motorista.getValorDiaria()
         );
     }

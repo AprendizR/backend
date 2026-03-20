@@ -25,7 +25,7 @@ public class NotaFiscalMapper {
                 .latitude(dto.latitude())
                 .longitude(dto.longitude())
                 .status(StatusNota.PENDENTE)
-                .dataEmissao(LocalDateTime.now())
+                .dataEmissao(dto.dataEmissao() != null ? dto.dataEmissao().atStartOfDay() : LocalDateTime.now())
                 .build();
     }
 

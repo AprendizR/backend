@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface CargaRepository extends JpaRepository<CargaEntity, Long>, JpaSpecificationExecutor<CargaEntity> {
@@ -22,5 +24,19 @@ public interface CargaRepository extends JpaRepository<CargaEntity, Long>, JpaSp
     long countByStatusCarga(StatusCarga statusCarga);
 
     boolean existsByMotoristaId(Long motoristaId);
+
+    @Query("SELECT c FROM CargaEntity c WHERE c.motorista.id = :motoristaId AND c.dataCriacao BETWEEN :inicio AND :fim")
+    List<CargaEntity> buscarPorMotoristaEPeriodo(
+            @Param("motoristaId") Long motoristaId,
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fim") LocalDateTime fim
+    );
+
+    @Query("SELECT c FROM CargaEntity c WHERE c.ajudante.id = :ajudanteId AND c.dataCriacao BETWEEN :inicio AND :fim")
+    List<CargaEntity> buscarPorAjudanteEPeriodo(
+            @Param("ajudanteId") Long ajudanteId,
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fim") LocalDateTime fim
+    );
 }
 

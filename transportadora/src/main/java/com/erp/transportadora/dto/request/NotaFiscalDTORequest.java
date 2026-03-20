@@ -1,7 +1,10 @@
 package com.erp.transportadora.dto.request;
 
+import java.time.LocalDate;
+
 public record NotaFiscalDTORequest(
         String numero,
+        LocalDate dataEmissao,
         Long clienteId,
         String remetente,
         String destinatario,

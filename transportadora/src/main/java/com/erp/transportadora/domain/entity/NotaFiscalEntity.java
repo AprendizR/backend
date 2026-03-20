@@ -52,7 +52,9 @@ public class NotaFiscalEntity {
 
     @PrePersist
     public void prePersist() {
-        this.dataEmissao = LocalDateTime.now();
+        if (this.dataEmissao == null) {
+            this.dataEmissao = LocalDateTime.now();
+        }
     }
 
 

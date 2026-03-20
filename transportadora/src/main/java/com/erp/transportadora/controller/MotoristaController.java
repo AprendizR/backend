@@ -7,11 +7,13 @@ import com.erp.transportadora.dto.response.FolhaMotoristaDTOResponse;
 import com.erp.transportadora.dto.response.MotoristaDTOResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -55,15 +57,12 @@ public class MotoristaController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}/zerar-dias")
-    public ResponseEntity<Void> zerarDias(@PathVariable Long id) {
-        service.zerarDias(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("{id}/folha")
-    public ResponseEntity<FolhaMotoristaDTOResponse> folha(@PathVariable Long id) {
-        return ResponseEntity.ok(service.gerarFolha(id));
+    @GetMapping("/{id}/folha")
+    public ResponseEntity<FolhaMotoristaDTOResponse> gerarFolha(
+            @PathVariable Long id,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+        return ResponseEntity.ok(service.gerarFolha(id, dataInicio, dataFim));
     }
 
     @PutMapping("/{id}/descontos")
