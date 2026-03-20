@@ -9,7 +9,6 @@ import com.erp.transportadora.domain.repository.NotaFiscalRepository;
 import com.erp.transportadora.domain.spec.NotaFiscalSpecification;
 import com.erp.transportadora.dto.request.NotaFiscalDTORequest;
 import com.erp.transportadora.dto.response.NotaFiscalDTOResponse;
-import com.erp.transportadora.dto.response.NotaFiscalDTOResumo;
 import com.erp.transportadora.validators.NormalizadorUtils;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -38,9 +37,9 @@ public class NotaFiscalService {
         Long proximaOS = repository.findMaxOrdemServico() + 1;
         NotaFiscalEntity nota = NotaFiscalMapper.toEntity(dto);
         nota.setOrdemServico(proximaOS);
-        if (dto.clienteId() != null){
+        if (dto.clienteId() != null) {
             ClienteEntity cliente = clienteRepository.findById(dto.clienteId())
-                    .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente nao encontrado"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente nao encontrado"));
             nota.setCliente(cliente);
         }
 
@@ -50,7 +49,8 @@ public class NotaFiscalService {
 
     @Transactional
     public NotaFiscalDTOResponse atualizar(Long id, NotaFiscalDTORequest dto) {
-        NotaFiscalEntity entity = buscaPorId(id);
+        NotaFiscalEntity entity = repository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota não encontrada"));
         if (dto.clienteId() != null) {
             ClienteEntity cliente = clienteRepository.findById(dto.clienteId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
@@ -73,13 +73,17 @@ public class NotaFiscalService {
     }
 
     @Transactional
-    public NotaFiscalEntity buscaPorId(Long id) {
-        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota fiscal não encontrada"));
+    public NotaFiscalDTOResponse buscaPorId(Long id) {
+        return NotaFiscalMapper.toResponse(repository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota fiscal não encontrada")));
     }
 
     @Transactional
     public List<NotaFiscalDTOResponse> listarDisponiveis() {
-        return repository.findByCargaIsNullAndStatus(StatusNota.PENDENTE).stream().map(NotaFiscalMapper::toResponse).toList();
+        return repository.findByCargaIsNullAndStatus(StatusNota.PENDENTE)
+                .stream()
+                .map(NotaFiscalMapper::toResponse)
+                .toList();
     }
 
     @Transactional
@@ -97,7 +101,8 @@ public class NotaFiscalService {
 
     @Transactional
     public void salvarFoto(Long id, MultipartFile arquivo) {
-        NotaFiscalEntity nota = buscaPorId(id);
+        NotaFiscalEntity nota = repository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota fiscal não encontrada"));
         String caminho = storageService.salvar(arquivo, "nota_" + id);
         nota.getFotos().add(caminho);
         repository.save(nota);
@@ -105,7 +110,8 @@ public class NotaFiscalService {
 
     @Transactional
     public void removerFoto(Long id, String caminho) {
-        NotaFiscalEntity nota = buscaPorId(id);
+        NotaFiscalEntity nota = repository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota fiscal não encontrada"));
         storageService.deletar(caminho);
         nota.getFotos().remove(caminho);
         repository.save(nota);

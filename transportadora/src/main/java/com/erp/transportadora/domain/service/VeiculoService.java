@@ -17,11 +17,12 @@ import java.util.List;
 public class VeiculoService {
     private final VeiculoRepository repository;
 
-    public VeiculoEntity salvar(VeiculoEntity veiculo) {
-        if (repository.existsByPlaca(veiculo.getPlaca())) {
+    public VeiculoDTOResponse salvar(VeiculoDTORequest dto) {
+        VeiculoEntity veiculo = VeiculoMapper.toEntity(dto);
+        if (repository.existsByPlaca(dto.placa())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Placa já existente");
         }
-        return repository.save(veiculo);
+        return VeiculoMapper.toResponse(repository.save(veiculo));
     }
 
     public VeiculoEntity atualizar(Long id, VeiculoDTORequest dto) {

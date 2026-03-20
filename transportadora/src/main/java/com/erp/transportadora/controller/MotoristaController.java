@@ -22,22 +22,22 @@ public class MotoristaController {
     private final MotoristaService service;
 
     @PostMapping
-    public ResponseEntity<MotoristaEntity> criar(@Valid @RequestBody MotoristaEntity motorista) {
+    public ResponseEntity<MotoristaDTOResponse> criar(@Valid @RequestBody MotoristaDTORequest motorista) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(motorista));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MotoristaEntity> atualizar(@PathVariable Long id, @Valid @RequestBody MotoristaDTORequest dto) {
+    public ResponseEntity<MotoristaDTOResponse> atualizar(@PathVariable Long id, @Valid @RequestBody MotoristaDTORequest dto) {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
     @GetMapping
-    public List<MotoristaEntity> listarTodos() {
+    public List<MotoristaDTOResponse> listarTodos() {
         return service.listarTodos();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MotoristaEntity> buscar(@PathVariable Long id) {
+    public ResponseEntity<MotoristaDTOResponse> buscar(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscaPorId(id));
     }
 
@@ -50,7 +50,7 @@ public class MotoristaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<MotoristaEntity> deletar(@PathVariable Long id) {
+    public ResponseEntity<MotoristaDTOResponse> deletar(@PathVariable Long id) {
         service.excluir(id);
         return ResponseEntity.noContent().build();
     }
@@ -67,7 +67,7 @@ public class MotoristaController {
     }
 
     @PutMapping("/{id}/descontos")
-    public ResponseEntity<MotoristaEntity> atualizarDescontos(@PathVariable Long id, @RequestParam Double descontos) {
+    public ResponseEntity<MotoristaDTOResponse> atualizarDescontos(@PathVariable Long id, @RequestParam Double descontos) {
         return ResponseEntity.ok(service.atualizarDescontos(id, descontos));
     }
 }

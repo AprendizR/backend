@@ -20,17 +20,17 @@ public class ClienteController {
     private final ClienteService service;
 
     @PostMapping
-    public ResponseEntity<ClienteEntity> criar(@Valid @RequestBody ClienteDTORequest dto) {
+    public ResponseEntity<ClienteDTOResponse> criar(@Valid @RequestBody ClienteDTORequest dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteEntity> atualizar(@PathVariable Long id, @Valid @RequestBody ClienteDTORequest dto) {
+    public ResponseEntity<ClienteDTOResponse> atualizar(@PathVariable Long id, @Valid @RequestBody ClienteDTORequest dto) {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClienteEntity> buscar(@PathVariable Long id) {
+    public ResponseEntity<ClienteDTOResponse> buscar(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 

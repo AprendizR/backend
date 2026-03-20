@@ -20,7 +20,7 @@ public class VeiculoController {
     private final VeiculoService service;
 
     @PostMapping
-    public ResponseEntity<VeiculoEntity> criar(@RequestBody VeiculoEntity veiculo) {
+    public ResponseEntity<VeiculoDTOResponse> criar(@RequestBody VeiculoDTORequest veiculo) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(veiculo));
     }
 

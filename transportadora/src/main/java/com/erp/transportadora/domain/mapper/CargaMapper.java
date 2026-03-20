@@ -59,7 +59,8 @@ public class CargaMapper {
                 carga.getMotorista().getNome(),
                 carga.getMotorista().getApelido(),
                 carga.getMotorista().getCpf(),
-                carga.getMotorista().getTelefone()
+                carga.getMotorista().getTelefone(),
+                carga.getMotorista().getValorDiaria()
         );
 
         MotoristaDTOResponse ajudante = carga.getAjudante() != null ? new MotoristaDTOResponse(
@@ -67,7 +68,8 @@ public class CargaMapper {
                 carga.getAjudante().getNome(),
                 carga.getAjudante().getApelido(),
                 carga.getAjudante().getCpf(),
-                carga.getAjudante().getTelefone()
+                carga.getAjudante().getTelefone(),
+                carga.getAjudante().getValorDiaria()
         ) : null;
 
         VeiculoDTOResponse veiculo = new VeiculoDTOResponse(

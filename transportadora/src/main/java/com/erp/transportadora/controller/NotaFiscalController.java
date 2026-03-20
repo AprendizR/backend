@@ -1,6 +1,5 @@
 package com.erp.transportadora.controller;
 
-import com.erp.transportadora.domain.entity.NotaFiscalEntity;
 import com.erp.transportadora.domain.service.NotaFiscalService;
 import com.erp.transportadora.dto.request.NotaFiscalDTORequest;
 import com.erp.transportadora.dto.response.NotaFiscalDTOResponse;
@@ -52,7 +51,7 @@ public class NotaFiscalController {
 
     // Buscar por ID (uso interno)
     @GetMapping("/{id}")
-    public ResponseEntity<NotaFiscalEntity> buscar(@PathVariable Long id) {
+    public ResponseEntity<NotaFiscalDTOResponse> buscar(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscaPorId(id));
     }
 

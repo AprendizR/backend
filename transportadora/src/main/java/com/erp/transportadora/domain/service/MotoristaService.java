@@ -1,6 +1,8 @@
 package com.erp.transportadora.domain.service;
 
+import com.erp.transportadora.domain.entity.ClienteEntity;
 import com.erp.transportadora.domain.entity.MotoristaEntity;
+import com.erp.transportadora.domain.mapper.ClienteMapper;
 import com.erp.transportadora.domain.mapper.MotoristaMapper;
 import com.erp.transportadora.domain.repository.CargaRepository;
 import com.erp.transportadora.domain.repository.MotoristaRepository;
@@ -21,38 +23,41 @@ public class MotoristaService {
     private final MotoristaRepository motoristaRepository;
     private final CargaRepository cargaRepository;
 
-    public MotoristaEntity salvar(@Valid MotoristaEntity dto) {
-        if (dto.getApelido() == null || dto.getApelido().isBlank()) {
-            dto.setApelido(dto.getNome());
-        }
-
+    public MotoristaDTOResponse salvar(MotoristaDTORequest dto) {
+        motoristaRepository.findByCpf(dto.cpf()).ifPresent(m -> {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF já cadastrado");
+        });
         MotoristaEntity motorista = MotoristaMapper.toEntity(dto);
 
-        motoristaRepository.findByCpf(motorista.getCpf()).ifPresent(m -> {
-            throw new ResponseStatusException
-                    (HttpStatus.CONFLICT, "CPF já cadastrado");
-        });
-        return motoristaRepository.save(motorista);
+        if (motorista.getApelido() == null || motorista.getApelido().isBlank()) {
+            motorista.setApelido(motorista.getNome());
+        }
+
+        return MotoristaMapper.toResponse(motoristaRepository.save(motorista));
     }
 
-    public MotoristaEntity atualizar(Long id, MotoristaDTORequest dto) {
-        MotoristaEntity entity = buscaPorId(id);
+    public MotoristaDTOResponse atualizar(Long id, MotoristaDTORequest dto) {
+        MotoristaEntity entity = motoristaRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motorista não encontrado"));
         entity.setNome(dto.nome() != null ? dto.nome() : null);
         entity.setApelido(dto.apelido() != null && !dto.apelido().isBlank() ? dto.apelido() : entity.getNome());
         entity.setCpf(dto.cpf() != null ? dto.cpf() : null);
         entity.setTelefone(dto.telefone() != null ? dto.telefone() : null);
         entity.setValorDiaria(dto.valorDiaria() != null ? dto.valorDiaria() : null);
 
-        return motoristaRepository.save(entity);
+        return MotoristaMapper.toResponse(motoristaRepository.save(entity));
     }
 
-    public MotoristaEntity buscaPorId(Long id) {
-        return motoristaRepository.findById(id).orElseThrow(() -> new ResponseStatusException
-                (HttpStatus.NOT_FOUND, "Motorista não encontrado"));
+    public MotoristaDTOResponse buscaPorId(Long id) {
+        return MotoristaMapper.toResponse(motoristaRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motorista não encontrado")));
     }
 
-    public List<MotoristaEntity> listarTodos() {
-        return motoristaRepository.findAll();
+    public List<MotoristaDTOResponse> listarTodos() {
+        return motoristaRepository.findAll()
+                .stream()
+                .map(MotoristaMapper::toResponse)
+                .toList();
     }
 
     public List<MotoristaDTOResponse> buscarPorNome(String nome) {
@@ -68,15 +73,17 @@ public class MotoristaService {
         motoristaRepository.deleteById(id);
     }
 
-    public void zerarDias(Long id){
-        MotoristaEntity entity = buscaPorId(id);
+    public void zerarDias(Long id) {
+        MotoristaEntity entity = motoristaRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motorista não encontrado"));
         entity.setDiasComoAjudante(0);
         entity.setDiasComoMotorista(0);
         motoristaRepository.save(entity);
     }
 
     public FolhaMotoristaDTOResponse gerarFolha(Long id) {
-        MotoristaEntity motorista = buscaPorId(id);
+        MotoristaEntity motorista = motoristaRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motorista nao encontrado"));
         return new FolhaMotoristaDTOResponse(
                 motorista.getId(),
                 motorista.getNome(),
@@ -89,9 +96,10 @@ public class MotoristaService {
         );
     }
 
-    public MotoristaEntity atualizarDescontos(Long id, Double descontos) {
-        MotoristaEntity motorista = buscaPorId(id);
+    public MotoristaDTOResponse atualizarDescontos(Long id, Double descontos) {
+        MotoristaEntity motorista = motoristaRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motorista nao encontrado"));
         motorista.setDescontos(descontos);
-        return motoristaRepository.save(motorista);
+        return MotoristaMapper.toResponse(motoristaRepository.save(motorista));
     }
 }
