@@ -24,9 +24,6 @@ public class MotoristaService {
     private final CargaRepository cargaRepository;
 
     public MotoristaDTOResponse salvar(MotoristaDTORequest dto) {
-        motoristaRepository.findByCpf(dto.cpf()).ifPresent(m -> {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF já cadastrado");
-        });
         MotoristaEntity motorista = MotoristaMapper.toEntity(dto);
 
         if (motorista.getApelido() == null || motorista.getApelido().isBlank()) {
