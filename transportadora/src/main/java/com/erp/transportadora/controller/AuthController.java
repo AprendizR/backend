@@ -2,8 +2,12 @@ package com.erp.transportadora.controller;
 
 import com.erp.transportadora.domain.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -34,7 +38,11 @@ public class AuthController {
     }
 
     @DeleteMapping("/usuarios/{id}")
-    public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarUsuario(@PathVariable Long id, Authentication authentication) {
+        String nomeLogado = authentication.getName();
+        if (!nomeLogado.equals("admin")){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas administrador pode excluir");
+        }
         service.deletarUsuario(id);
         return ResponseEntity.noContent().build();
     }
