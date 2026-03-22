@@ -79,15 +79,29 @@ public class CargaService {
     public CargaDTOResponse atualizar(Long id, CargaDTORequest dto) {
         CargaEntity carga = cargaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Carga não encontrada"));
+
         int diasAntigos = carga.getDiasRota() != null ? carga.getDiasRota() : 1;
         int diasNovos = dto.diasRota() != null ? dto.diasRota() : 1;
-        VeiculoEntity veiculo = dto.veiculoId() != null ? veiculoRepository.findById(dto.veiculoId())
-                .orElseThrow(() -> new RuntimeException("Veículo não encontrado")) : carga.getVeiculo();
-        MotoristaEntity motorista = dto.motoristaId() != null ? motoristaRepository.findById(dto.motoristaId())
-                .orElseThrow(() -> new RuntimeException("Motorista não encontrado")) : carga.getMotorista();
+
+        MotoristaEntity motoristaAntigo = carga.getMotorista();
+        MotoristaEntity motoristaNovo = dto.motoristaId() != null
+                ? motoristaRepository.findById(dto.motoristaId())
+                .orElseThrow(() -> new RuntimeException("Motorista não encontrado"))
+                : carga.getMotorista();
+
+        if (!motoristaAntigo.getId().equals(motoristaNovo.getId())) {
+            motoristaAntigo.setDiasComoMotorista(Math.max(0, motoristaAntigo.getDiasComoMotorista() - diasAntigos));
+            motoristaRepository.save(motoristaAntigo);
+            motoristaNovo.setDiasComoMotorista(motoristaNovo.getDiasComoMotorista() + diasNovos);
+            motoristaRepository.save(motoristaNovo);
+        }
+
+        VeiculoEntity veiculo = dto.veiculoId() != null
+                ? veiculoRepository.findById(dto.veiculoId())
+                .orElseThrow(() -> new RuntimeException("Veículo não encontrado"))
+                : carga.getVeiculo();
 
         MotoristaEntity ajudanteAntigo = carga.getAjudante();
-        
         if (ajudanteAntigo != null) {
             ajudanteAntigo.setDiasComoAjudante(Math.max(0, ajudanteAntigo.getDiasComoAjudante() - diasAntigos));
             motoristaRepository.save(ajudanteAntigo);
@@ -104,7 +118,7 @@ public class CargaService {
         }
 
         carga.setVeiculo(veiculo);
-        carga.setMotorista(motorista);
+        carga.setMotorista(motoristaNovo);
         carga.setDiasRota(diasNovos);
 
         CargaEntity salva = cargaRepository.save(carga);
@@ -113,7 +127,7 @@ public class CargaService {
                 salva.getNumeroRota(),
                 salva.getStatusCarga(),
                 veiculo.getId(),
-                motorista.getId(),
+                motoristaNovo.getId(),
                 salva.getDataCriacao()
         );
     }
