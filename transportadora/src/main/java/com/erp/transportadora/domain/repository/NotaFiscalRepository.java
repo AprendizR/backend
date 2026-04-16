@@ -38,4 +38,17 @@ public interface NotaFiscalRepository extends JpaRepository<NotaFiscalEntity, Lo
             @Param("dataInicio") LocalDateTime dataInicio,
             @Param("dataFim") LocalDateTime dataFim
     );
+
+    @Query(value = "SELECT n.data_emissao, n.numero, n.valor, n.destinatario, n.cidade, n.frete " +
+            "FROM notas_fiscais n " +
+            "WHERE n.cliente_id = :clienteId " +
+            "AND n.status NOT IN ('PENDENTE', 'EM_ROTA') " +
+            "AND n.data_emissao >= :dataInicio " +
+            "AND n.data_emissao <= :dataFim " +
+            "ORDER BY n.data_emissao", nativeQuery = true)
+    List<Object[]> buscarNotasPorClienteEPeriodo(
+            @Param("clienteId") Long clienteId,
+            @Param("dataInicio") LocalDateTime dataInicio,
+            @Param("dataFim") LocalDateTime dataFim
+    );
 }

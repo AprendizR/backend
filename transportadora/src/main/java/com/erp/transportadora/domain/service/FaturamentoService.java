@@ -16,6 +16,7 @@ public class FaturamentoService {
     private final NotaFiscalRepository repository;
 
     public List<FaturamentoDTOClienteResponse> listar(LocalDate dataInicio, LocalDate dataFim) {
+
         LocalDateTime inicio = dataInicio != null ? dataInicio.atStartOfDay() : LocalDateTime.of(2000, 1, 1, 0, 0);
         LocalDateTime fim = dataFim != null ? dataFim.atTime(23, 59, 59) : LocalDateTime.of(2099, 12, 31, 23, 59);
 
@@ -45,5 +46,11 @@ public class FaturamentoService {
 
             return new FaturamentoDTOClienteResponse(clienteId, nomeCliente, totalNotas, totalFrete, cidades);
         }).toList();
+    }
+
+    public List<Object[]> buscarNotasDoCliente(Long clienteId, LocalDate dataInicio, LocalDate dataFim) {
+        LocalDateTime inicio = dataInicio != null ? dataInicio.atStartOfDay() : LocalDateTime.of(2000, 1, 1, 0, 0);
+        LocalDateTime fim = dataFim != null ? dataFim.atTime(23, 59, 59) : LocalDateTime.of(2099, 12, 31, 23, 59);
+        return repository.buscarNotasPorClienteEPeriodo(clienteId, inicio, fim);
     }
 }
