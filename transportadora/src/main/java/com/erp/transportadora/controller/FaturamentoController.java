@@ -30,9 +30,10 @@ public class FaturamentoController {
 
     @GetMapping("/excel")
     public ResponseEntity<byte[]> gerarExcel(
+            @RequestParam Long clienteId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
-        byte[] arquivo = excelService.gerarExcel(dataInicio, dataFim);
+        byte[] arquivo = excelService.gerarExcel(clienteId, dataInicio, dataFim);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=faturamento.xlsx")
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
