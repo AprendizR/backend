@@ -18,6 +18,9 @@ public class ClienteEntity {
     @Column(nullable = false)
     private String nome;
 
+    @Column (name = "senha_portal")
+    private String senhaPortal;
+
     private String cnpj;
     private String cidade;
     private String endereco;

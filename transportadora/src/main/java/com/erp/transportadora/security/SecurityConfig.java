@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/portal/**").permitAll()
                         .requestMatchers("/api/notas-fiscais/*/foto").permitAll()
                         .anyRequest().authenticated()
                 )

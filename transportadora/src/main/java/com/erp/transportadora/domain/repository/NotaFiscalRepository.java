@@ -14,16 +14,18 @@ import java.util.Optional;
 
 public interface NotaFiscalRepository extends JpaRepository<NotaFiscalEntity, Long>, JpaSpecificationExecutor<NotaFiscalEntity> {
 
-    Optional<NotaFiscalEntity> findByOrdemServico(Long ordemServico);
-
-    @Query("SELECT COALESCE(MAX(n.ordemServico), 0) FROM NotaFiscalEntity n")
-    Long findMaxOrdemServico();
-
     long countByStatus(StatusNota status);
 
     long countByStatusAndDataEmissaoAfter(StatusNota status, LocalDateTime data);
 
     List<NotaFiscalEntity> findByCargaIsNullAndStatus(StatusNota status);
+
+    List<NotaFiscalEntity> findByClienteId(Long clienteId);
+
+    Optional<NotaFiscalEntity> findByOrdemServico(Long ordemServico);
+
+    @Query("SELECT COALESCE(MAX(n.ordemServico), 0) FROM NotaFiscalEntity n")
+    Long findMaxOrdemServico();
 
     @Query(value = "SELECT n.cliente_id, c.nome, n.cidade, COUNT(n.id), COALESCE(SUM(n.frete), 0) " +
             "FROM notas_fiscais n " +
