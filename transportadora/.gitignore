@@ -1,33 +1,55 @@
-HELP.md
+### Java & Build Tools ###
 target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+build/
+*.class
+*.war
+*.ear
+*.jar
+*.zip
+*.tar.gz
+*.rar
 
-### STS ###
+### Maven ###
+log/
+.mvn/
+mvnw
+mvnw.cmd
+!.mvn/wrapper/maven-wrapper.jar
+
+### Spring Boot ###
+HELP.md
 .apt_generated
-.classpath
 .factorypath
-.project
-.settings
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
+### Banco de Dados ###
+*.sql
+*.log
+.db_data/
+
+### Configurações Sensíveis ###
+application-local.properties
+application-dev.properties
+.env
+
+### IDEs ###
+# IntelliJ IDEA
+.idea/
 *.iws
 *.iml
 *.ipr
+out/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+# VS Code
 .vscode/
+
+# Eclipse / STS
+.settings/
+.project
+.classpath
+bin/
+
+### Sistema Operacional ###
+DS_Store
+Thumbs.db

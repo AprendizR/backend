@@ -41,7 +41,7 @@ public class RelatorioNotaService {
         NotaFiscalEntity nota = notaFiscalRepository.findById(notaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota não encontrada"));
 
-        if (nota.getStatus() != StatusNota.ENTREGUE) {
+        if (nota.getStatus() == StatusNota.EM_ROTA) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Relatório disponível apenas para notas entregues");
         }
 

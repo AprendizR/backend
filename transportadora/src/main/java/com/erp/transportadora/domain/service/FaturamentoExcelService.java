@@ -52,9 +52,10 @@ public class FaturamentoExcelService {
             sheet.setColumnWidth(0, 3500);
             sheet.setColumnWidth(1, 4000);
             sheet.setColumnWidth(2, 5000);
-            sheet.setColumnWidth(3, 7000);
-            sheet.setColumnWidth(4, 4000);
+            sheet.setColumnWidth(3, 4000);
+            sheet.setColumnWidth(4, 7000);
             sheet.setColumnWidth(5, 4000);
+            sheet.setColumnWidth(6, 4000);
 
             int rowNum = 0;
 
@@ -73,7 +74,7 @@ public class FaturamentoExcelService {
             rowNum++;
 
             Row tituloRow = sheet.createRow(rowNum++);
-            String[] titulos = {"Data", "Notas Fiscais", "Valor Merc.", "Destino", "Cidade", "Frete Valor"};
+            String[] titulos = {"Data", "Notas Fiscais", "Valor Merc.", "Volume", "Destino", "Cidade", "Frete Valor"};
             for (int i = 0; i < titulos.length; i++) {
                 Cell c = tituloRow.createCell(i);
                 c.setCellValue(titulos[i]);
@@ -83,6 +84,7 @@ public class FaturamentoExcelService {
             List<Object[]> notas = faturamentoService.buscarNotasDoCliente(clienteSelecionado.clienteId(), dataInicio, dataFim);
             double totalValor = 0;
             double totalFrete = 0;
+            int totalVolume = 0;
 
             for (Object[] nota : notas) {
                 Row linhaRow = sheet.createRow(rowNum++);
@@ -90,29 +92,33 @@ public class FaturamentoExcelService {
                 String dataStr = formatarData(nota[0]);
                 String numero = nota[1] != null ? (String) nota[1] : "";
                 Double valor = nota[2] != null ? ((Number) nota[2]).doubleValue() : 0.0;
-                String dest = nota[3] != null ? (String) nota[3] : "";
-                String cid = nota[4] != null ? (String) nota[4] : "";
-                Double frete = nota[5] != null ? ((Number) nota[5]).doubleValue() : 0.0;
+                Integer volume = nota[3] != null ? ((Number) nota[3]).intValue() : 0;
+                String dest = nota[4] != null ? (String) nota[4] : "";
+                String cid = nota[5] != null ? (String) nota[5] : "";
+                Double frete = nota[6] != null ? ((Number) nota[6]).doubleValue() : 0.0;
 
                 criarCelula(linhaRow, 0, dataStr, estiloLinha);
                 criarCelula(linhaRow, 1, numero, estiloLinha);
-                criarCelulaComEstilo(linhaRow, 2, valor, estiloMoeda); // Usando estilo reaproveitado
-                criarCelula(linhaRow, 3, dest, estiloLinha);
-                criarCelula(linhaRow, 4, cid, estiloLinha);
-                criarCelulaComEstilo(linhaRow, 5, frete, estiloMoeda); // Usando estilo reaproveitado
+                criarCelulaComEstilo(linhaRow, 2, valor, estiloMoeda);
+                criarCelula(linhaRow, 3, String.valueOf(volume), estiloTotal);
+                criarCelula(linhaRow, 4, dest, estiloLinha);
+                criarCelula(linhaRow, 5, cid, estiloLinha);
+                criarCelulaComEstilo(linhaRow, 6, frete, estiloMoeda);
 
                 totalValor += valor;
                 totalFrete += frete;
+                totalVolume += volume;
             }
 
             rowNum++;
             Row totalRow = sheet.createRow(rowNum++);
             criarCelula(totalRow, 0, "TOTAL", estiloTotal);
             criarCelula(totalRow, 1, "", estiloTotal);
-            criarCelulaComEstilo(totalRow, 2, totalValor, estiloTotal); // Aqui pode ser o total ou um novo estilo moeda-negrito
-            criarCelula(totalRow, 3, "", estiloTotal);
+            criarCelulaComEstilo(totalRow, 2, totalValor, estiloTotal);
+            criarCelula(totalRow, 3, String.valueOf(totalVolume), estiloTotal);
             criarCelula(totalRow, 4, "", estiloTotal);
-            criarCelulaComEstilo(totalRow, 5, totalFrete, estiloTotal);
+            criarCelula(totalRow, 5, "", estiloTotal);
+            criarCelulaComEstilo(totalRow, 6, totalFrete, estiloTotal);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);

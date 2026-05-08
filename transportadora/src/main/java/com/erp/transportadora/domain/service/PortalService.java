@@ -44,21 +44,18 @@ public class PortalService {
 
         List<NotaFiscalEntity> notas = notaFiscalRepository.findByClienteId(cliente.getId());
 
-        // filtro por número
         if (numero != null && !numero.isBlank()) {
             notas = notas.stream()
                     .filter(n -> n.getNumero() != null && n.getNumero().contains(numero))
                     .toList();
         }
 
-        // filtro por status
         if (status != null && !status.isBlank()) {
             notas = notas.stream()
                     .filter(n -> n.getStatus() != null && n.getStatus().name().equals(status))
                     .toList();
         }
 
-        // filtro por data
         if (dataInicio != null && !dataInicio.isBlank()) {
             LocalDateTime inicio = LocalDate.parse(dataInicio).atStartOfDay();
             notas = notas.stream()
@@ -72,11 +69,9 @@ public class PortalService {
                     .toList();
         }
 
-        // se não pesquisou nada, retorna últimas 10 entregues
         if ((numero == null || numero.isBlank()) && (status == null || status.isBlank())
                 && (dataInicio == null || dataInicio.isBlank()) && (dataFim == null || dataFim.isBlank())) {
             notas = notas.stream()
-                    .filter(n -> n.getStatus() != null && n.getStatus().name().equals("ENTREGUE"))
                     .sorted(Comparator.comparing(NotaFiscalEntity::getDataEmissao, Comparator.nullsLast(Comparator.reverseOrder())))
                     .limit(10)
                     .toList();

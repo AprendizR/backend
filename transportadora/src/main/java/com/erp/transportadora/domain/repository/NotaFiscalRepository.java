@@ -41,7 +41,7 @@ public interface NotaFiscalRepository extends JpaRepository<NotaFiscalEntity, Lo
             @Param("dataFim") LocalDateTime dataFim
     );
 
-    @Query(value = "SELECT n.data_emissao, n.numero, n.valor, n.destinatario, n.cidade, n.frete " +
+    @Query(value = "SELECT n.data_emissao, n.numero, n.valor, n.volumes, n.destinatario, n.cidade, n.frete " +
             "FROM notas_fiscais n " +
             "WHERE n.cliente_id = :clienteId " +
             "AND n.status NOT IN ('PENDENTE', 'EM_ROTA') " +
