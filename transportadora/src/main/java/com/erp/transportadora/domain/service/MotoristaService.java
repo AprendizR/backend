@@ -9,6 +9,7 @@ import com.erp.transportadora.domain.repository.MotoristaRepository;
 import com.erp.transportadora.dto.request.MotoristaDTORequest;
 import com.erp.transportadora.dto.response.FolhaMotoristaDTOResponse;
 import com.erp.transportadora.dto.response.MotoristaDTOResponse;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -89,8 +90,8 @@ public class MotoristaService {
             diasComoAjudante = cargaRepository.buscarPorAjudanteEPeriodo(id, inicio, fim)
                     .stream().mapToInt(c -> c.getDiasRota() != null ? c.getDiasRota() : 1).sum();
         } else {
-            diasComoMotorista = motorista.getDiasComoMotorista();
-            diasComoAjudante = motorista.getDiasComoAjudante();
+            diasComoMotorista = motorista.getDiasComoMotorista() + motorista.getAjusteDiasMotorista();
+            diasComoAjudante = motorista.getDiasComoAjudante() + motorista.getAjusteDiasAjudante();
         }
 
         return new FolhaMotoristaDTOResponse(
@@ -110,5 +111,25 @@ public class MotoristaService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motorista nao encontrado"));
         motorista.setDescontos(descontos);
         return MotoristaMapper.toResponse(motoristaRepository.save(motorista));
+    }
+
+    @Transactional
+    public FolhaMotoristaDTOResponse ajustarDias(Long id, Integer ajusteMotorista, Integer ajusteAjudante) {
+        MotoristaEntity motorista = motoristaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motorista não encontrado"));
+
+        if (ajusteMotorista != null) {
+            int atual = (motorista.getDiasComoMotorista() != null ? motorista.getDiasComoMotorista() : 0);
+            motorista.setDiasComoMotorista(atual + ajusteMotorista);
+        }
+
+        if (ajusteAjudante != null) {
+            int atual = (motorista.getDiasComoAjudante() != null ? motorista.getDiasComoAjudante() : 0);
+            motorista.setDiasComoAjudante(atual + ajusteAjudante);
+        }
+
+        motoristaRepository.save(motorista);
+
+        return gerarFolha(id, null, null);
     }
 }

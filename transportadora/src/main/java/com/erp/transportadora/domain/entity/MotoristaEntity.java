@@ -42,4 +42,7 @@ public class MotoristaEntity {
     @Column(nullable = false)
     @Builder.Default
     private Double descontos = 0.0;
+
+    private Integer ajusteDiasMotorista = 0;
+    private Integer ajusteDiasAjudante = 0;
 }

@@ -69,4 +69,11 @@ public class MotoristaController {
     public ResponseEntity<MotoristaDTOResponse> atualizarDescontos(@PathVariable Long id, @RequestParam Double descontos) {
         return ResponseEntity.ok(service.atualizarDescontos(id, descontos));
     }
+
+    @PutMapping("/{id}/ajuste-dias")
+    public ResponseEntity<FolhaMotoristaDTOResponse> ajustarDias(@PathVariable Long id,
+                                                                 @RequestParam (required = false) Integer ajusteMotorista,
+                                                                 @RequestParam (required = false) Integer ajusteAjudante){
+        return ResponseEntity.ok(service.ajustarDias(id, ajusteMotorista, ajusteAjudante));
+    }
 }
