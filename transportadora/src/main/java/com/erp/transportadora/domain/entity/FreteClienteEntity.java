@@ -1,5 +1,6 @@
 package com.erp.transportadora.domain.entity;
 
+import com.erp.transportadora.domain.enums.TipoFrete;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,4 +22,12 @@ public class FreteClienteEntity {
 
     @Column(nullable = false)
     private Double valor;
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    @Builder.Default
+    private TipoFrete tipo = TipoFrete.CIDADE;
+
+    private Double percentual;
+    private Double adicional;
 }

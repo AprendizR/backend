@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -32,9 +33,10 @@ public class NotaFiscalService {
     private final CargaService cargaService;
     private final ClienteRepository clienteRepository;
     private final StorageService storageService;
+    private final FreteClienteService freteClienteService;
 
     @Transactional
-    public NotaFiscalDTOResponse criar(NotaFiscalDTORequest dto) {
+    public NotaFiscalDTOResponse criar(NotaFiscalDTORequest dto, String usuarioAlteracao) {
         Long proximaOS = repository.findMaxOrdemServico() + 1;
         NotaFiscalEntity nota = NotaFiscalMapper.toEntity(dto);
         nota.setOrdemServico(proximaOS);
@@ -43,13 +45,15 @@ public class NotaFiscalService {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente nao encontrado"));
             nota.setCliente(cliente);
         }
+        nota.setFrete(resolverFrete(dto));
+        registrarUltimaAlteracao(nota, usuarioAlteracao);
 
         NotaFiscalEntity salva = repository.save(nota);
         return NotaFiscalMapper.toResponse(salva);
     }
 
     @Transactional
-    public NotaFiscalDTOResponse atualizar(Long id, NotaFiscalDTORequest dto) {
+    public NotaFiscalDTOResponse atualizar(Long id, NotaFiscalDTORequest dto, String usuarioAlteracao) {
         NotaFiscalEntity entity = repository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota não encontrada"));
         if (dto.clienteId() != null) {
@@ -67,6 +71,8 @@ public class NotaFiscalService {
         entity.setValor(dto.valor());
         entity.setVolumes(dto.volumes());
         entity.setCep(dto.cep() != null ? NormalizadorUtils.apenasNumeros(dto.cep()) : null);
+        entity.setFrete(resolverFrete(dto));
+        registrarUltimaAlteracao(entity, usuarioAlteracao);
 
         NotaFiscalEntity salva = repository.save(entity);
 
@@ -101,34 +107,48 @@ public class NotaFiscalService {
     }
 
     @Transactional
-    public void salvarFoto(Long id, MultipartFile arquivo) {
+    public void salvarFoto(Long id, MultipartFile arquivo, String usuarioAlteracao) {
         NotaFiscalEntity nota = repository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota fiscal não encontrada"));
         String caminho = storageService.salvar(arquivo, "nota_" + id);
         nota.getFotos().add(caminho);
+        registrarUltimaAlteracao(nota, usuarioAlteracao);
         repository.save(nota);
     }
 
     @Transactional
-    public void removerFoto(Long id, String caminho) {
+    public void removerFoto(Long id, String caminho, String usuarioAlteracao) {
         NotaFiscalEntity nota = repository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota fiscal não encontrada"));
         storageService.deletar(caminho);
         nota.getFotos().remove(caminho);
+        registrarUltimaAlteracao(nota, usuarioAlteracao);
         repository.save(nota);
     }
 
     @Transactional
-    public void cancelarBaixa(Long id) {
+    public void cancelarBaixa(Long id, String usuarioAlteracao) {
         NotaFiscalEntity nota = repository.findById(id).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota não encontrada"));
         if (nota.getStatus() != StatusNota.PENDENTE && nota.getStatus() != StatusNota.EM_ROTA) {
             nota.setStatus(StatusNota.PENDENTE);
+            registrarUltimaAlteracao(nota, usuarioAlteracao);
         }
         repository.save(nota);
 
         if (nota.getCarga() != null) {
             cargaService.recalcularStatus(nota.getCarga());
         }
+    }
+
+    private void registrarUltimaAlteracao(NotaFiscalEntity nota, String usuarioAlteracao) {
+        nota.setUltimoUsuarioAlteracao(usuarioAlteracao != null && !usuarioAlteracao.isBlank() ? usuarioAlteracao : "Sistema");
+        nota.setDataUltimaAlteracao(LocalDateTime.now());
+    }
+
+    private Double resolverFrete(NotaFiscalDTORequest dto) {
+        if (dto.frete() != null) return dto.frete();
+        if (dto.clienteId() == null || dto.cidade() == null || dto.cidade().isBlank()) return null;
+        return freteClienteService.calcularFrete(dto.clienteId(), dto.cidade(), dto.valor()).orElse(null);
     }
 }

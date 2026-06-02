@@ -1,6 +1,7 @@
 package com.erp.transportadora.dto.response;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 public record NotaFiscalDTOResponse(
         Long id,
@@ -18,5 +19,7 @@ public record NotaFiscalDTOResponse(
         String status,
         List<String> fotos,
         Double latitude,
-        Double longitude
+        Double longitude,
+        String ultimoUsuarioAlteracao,
+        LocalDateTime dataUltimaAlteracao
 ) {}

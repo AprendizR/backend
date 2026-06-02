@@ -72,4 +72,6 @@ public class NotaFiscalEntity {
     private Double longitude;
     private Integer ordemEntrega;
     private LocalDateTime dataEntrega;
+    private String ultimoUsuarioAlteracao;
+    private LocalDateTime dataUltimaAlteracao;
 }

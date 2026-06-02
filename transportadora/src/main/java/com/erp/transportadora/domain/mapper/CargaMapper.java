@@ -47,7 +47,9 @@ public class CargaMapper {
                                 isFinalizada(n),
                                 new ArrayList<>(n.getFotos()),
                                 n.getOrdemEntrega(),
-                                n.getDataEmissao()
+                                n.getDataEmissao(),
+                                n.getUltimoUsuarioAlteracao(),
+                                n.getDataUltimaAlteracao()
                         ))
                         .toList(),
                 carga.getDataCriacao()

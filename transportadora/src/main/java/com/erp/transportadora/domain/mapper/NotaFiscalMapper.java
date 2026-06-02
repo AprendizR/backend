@@ -46,7 +46,9 @@ public class NotaFiscalMapper {
                 entity.getStatus() != null ? entity.getStatus().name() : "PENDENTE",
                 new ArrayList<>(entity.getFotos()),
                 entity.getLatitude(),
-                entity.getLongitude()
+                entity.getLongitude(),
+                entity.getUltimoUsuarioAlteracao(),
+                entity.getDataUltimaAlteracao()
         );
     }
 }

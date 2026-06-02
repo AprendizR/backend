@@ -13,5 +13,7 @@ public record NotaFiscalDTOResumo(
         boolean entregue,
         List<String> fotos,
         Integer ordemEntrega,
-        LocalDateTime dataEmissao
+        LocalDateTime dataEmissao,
+        String ultimoUsuarioAlteracao,
+        LocalDateTime dataUltimaAlteracao
 ) {}

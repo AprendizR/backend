@@ -17,9 +17,12 @@ public class FreteClienteController {
     private final FreteClienteService service;
 
     @GetMapping
-    public ResponseEntity<?> buscar(@RequestParam Long clienteId, @RequestParam(required = false) String cidade) {
+    public ResponseEntity<?> buscar(
+            @RequestParam Long clienteId,
+            @RequestParam(required = false) String cidade,
+            @RequestParam(required = false) Double valorNota) {
         if (cidade != null && !cidade.isBlank()) {
-            return ResponseEntity.ok(service.buscar(clienteId, cidade));
+            return ResponseEntity.ok(service.buscar(clienteId, cidade, valorNota));
         }
         return ResponseEntity.ok(service.listarPorCliente(clienteId));
     }

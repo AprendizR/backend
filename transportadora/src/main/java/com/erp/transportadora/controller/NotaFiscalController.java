@@ -9,6 +9,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.MediaType;
@@ -27,13 +28,13 @@ public class NotaFiscalController {
     private final NotaFiscalService service;
 
     @PostMapping
-    public ResponseEntity<NotaFiscalDTOResponse> criar(@RequestBody NotaFiscalDTORequest dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(dto));
+    public ResponseEntity<NotaFiscalDTOResponse> criar(@RequestBody NotaFiscalDTORequest dto, Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(dto, usuarioLogado(authentication)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<NotaFiscalDTOResponse> atualizar(@PathVariable Long id, @RequestBody NotaFiscalDTORequest dto) {
-        return ResponseEntity.ok(service.atualizar(id, dto));
+    public ResponseEntity<NotaFiscalDTOResponse> atualizar(@PathVariable Long id, @RequestBody NotaFiscalDTORequest dto, Authentication authentication) {
+        return ResponseEntity.ok(service.atualizar(id, dto, usuarioLogado(authentication)));
     }
 
     @GetMapping
@@ -67,14 +68,14 @@ public class NotaFiscalController {
     }
 
     @PostMapping("/{id}/foto")
-    public ResponseEntity<Void> uploadFoto(@PathVariable Long id, @RequestParam("arquivo") MultipartFile arquivo) {
-        service.salvarFoto(id, arquivo);
+    public ResponseEntity<Void> uploadFoto(@PathVariable Long id, @RequestParam("arquivo") MultipartFile arquivo, Authentication authentication) {
+        service.salvarFoto(id, arquivo, usuarioLogado(authentication));
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}/foto")
-    public ResponseEntity<Void> removerFoto(@PathVariable Long id, @RequestParam String caminho) {
-        service.removerFoto(id, caminho);
+    public ResponseEntity<Void> removerFoto(@PathVariable Long id, @RequestParam String caminho, Authentication authentication) {
+        service.removerFoto(id, caminho, usuarioLogado(authentication));
         return ResponseEntity.noContent().build();
     }
 
@@ -95,8 +96,12 @@ public class NotaFiscalController {
     }
 
     @PutMapping("/{id}/cancelar-baixa")
-    public ResponseEntity<Void> cancelarBaixa(@PathVariable Long id) {
-        service.cancelarBaixa(id);
+    public ResponseEntity<Void> cancelarBaixa(@PathVariable Long id, Authentication authentication) {
+        service.cancelarBaixa(id, usuarioLogado(authentication));
         return ResponseEntity.ok().build();
+    }
+
+    private String usuarioLogado(Authentication authentication) {
+        return authentication != null ? authentication.getName() : null;
     }
 }
