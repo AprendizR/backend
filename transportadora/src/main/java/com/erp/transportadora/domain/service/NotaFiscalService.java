@@ -29,6 +29,7 @@ import java.util.List;
 @AllArgsConstructor
 public class NotaFiscalService {
     private final NotaFiscalRepository repository;
+    private final CargaService cargaService;
     private final ClienteRepository clienteRepository;
     private final StorageService storageService;
 
@@ -115,5 +116,19 @@ public class NotaFiscalService {
         storageService.deletar(caminho);
         nota.getFotos().remove(caminho);
         repository.save(nota);
+    }
+
+    @Transactional
+    public void cancelarBaixa(Long id) {
+        NotaFiscalEntity nota = repository.findById(id).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota não encontrada"));
+        if (nota.getStatus() != StatusNota.PENDENTE && nota.getStatus() != StatusNota.EM_ROTA) {
+            nota.setStatus(StatusNota.PENDENTE);
+        }
+        repository.save(nota);
+
+        if (nota.getCarga() != null) {
+            cargaService.recalcularStatus(nota.getCarga());
+        }
     }
 }

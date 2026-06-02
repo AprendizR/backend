@@ -93,4 +93,10 @@ public class NotaFiscalController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PutMapping("/{id}/cancelar-baixa")
+    public ResponseEntity<Void> cancelarBaixa(@PathVariable Long id) {
+        service.cancelarBaixa(id);
+        return ResponseEntity.ok().build();
+    }
 }
